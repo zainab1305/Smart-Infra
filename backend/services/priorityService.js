@@ -16,18 +16,18 @@ const calculatePriority = ({ category, confidenceScore }) => {
   return Math.round(score);
 };
 
-const generateReason = ({ category, confidenceScore }) => {
-  let reason = [];
+const generateExplanation = ({ category, confidenceScore }) => {
+  let explanation = [];
 
   if (confidenceScore > 0.7) {
-    reason.push("High-quality visual evidence");
+    explanation.push("High-quality visual evidence");
   } else {
-    reason.push("Limited image clarity");
+    explanation.push("Limited image clarity");
   }
 
-  reason.push(`Category classified as ${category}`);
+  explanation.push(`Category classified as ${category}`);
 
-  return reason.join("; ");
+  return explanation.join("; ");
 };
 
-module.exports = { calculatePriority, generateReason };
+module.exports = { calculatePriority, generateExplanation };

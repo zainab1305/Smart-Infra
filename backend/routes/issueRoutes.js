@@ -2,7 +2,7 @@ const express = require("express");
 const Issue = require("../models/Issue");
 const upload = require("../middleware/upload");
 const analyzeImage = require("../services/imageService");
-const {calculatePriority,generateReason}=require("../services/priorityService");
+const {calculatePriority,generateExplanation}=require("../services/priorityService");
 const router = express.Router();
 
 // Create a new issue with image + confidence score
@@ -19,7 +19,7 @@ router.post("/", upload.single("image"), async (req, res) => {
     confidenceScore,
     });
 
-    const priorityReason = generateReason({
+    const explanation = generateExplanation({
     category: req.body.category,
     confidenceScore,
     });
@@ -29,7 +29,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       imageUrl: req.file ? req.file.path : null,
       confidenceScore,
       priorityScore,
-      priorityReason
+      explanation
     });
 
     await issue.save();
