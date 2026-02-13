@@ -111,6 +111,9 @@ export default function IssueReport() {
             <div className="status">
               Status: <b>{result.status}</b>
             </div>
+            <div className="status">
+              Explanation: <b>{result.explanation}</b>
+            </div>
           </div>
         )}
       </div>
