@@ -7,7 +7,7 @@ export default function UserDashboard({ token }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [newIssue, setNewIssue] = useState({
-    category: "Pothole",
+    category: "Road Damage",
     location: "",
   });
   const [imageFile, setImageFile] = useState(null);
@@ -50,7 +50,7 @@ export default function UserDashboard({ token }) {
       });
 
       alert("Issue reported successfully!");
-      setNewIssue({ category: "Pothole", location: "" });
+      setNewIssue({ category: "Road Damage", location: "" });
       setImageFile(null);
       fetchIssues();
     } catch (err) {
@@ -85,11 +85,11 @@ export default function UserDashboard({ token }) {
               onChange={(e) => setNewIssue({ ...newIssue, category: e.target.value })}
               required
             >
-              <option value="Pothole">Pothole</option>
-              <option value="Broken Pipe">Broken Pipe</option>
+              <option value="Road Damage">Road Damage</option>
+              <option value="Water Leakage">Water Leakage</option>
               <option value="Street Light">Street Light</option>
-              <option value="Pavement Damage">Pavement Damage</option>
-              <option value="Other">Other</option>
+              <option value="Garbage">Garbage</option>
+              <option value="Others">Others</option>
             </select>
 
             <input
@@ -123,8 +123,7 @@ export default function UserDashboard({ token }) {
                   <div className="issue-header">
                     <h3>{issue.category}</h3>
                     <span
-                      className="status-badge"
-                      style={{ backgroundColor: getStatusColor(issue.status) }}
+                      className={`status-badge status-${issue.status}`}
                     >
                       {issue.status}
                     </span>

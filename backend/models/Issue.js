@@ -29,6 +29,11 @@ const issueSchema = new mongoose.Schema(
       enum: ["Reported", "Assigned", "Resolved"],
       default: "Reported",
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   { timestamps: true }
 );

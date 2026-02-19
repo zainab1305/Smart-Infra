@@ -3,10 +3,11 @@ const Issue = require("../models/Issue");
 const upload = require("../middleware/upload");
 const analyzeImage = require("../services/imageService");
 const {calculatePriority,generateExplanation}=require("../services/priorityService");
+const { authMiddleware } = require("../middleware/auth");
 const router = express.Router();
 
 // Create a new issue with image + confidence score
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
   try {
     let confidenceScore = 0;
 
@@ -29,7 +30,8 @@ router.post("/", upload.single("image"), async (req, res) => {
       imageUrl: req.file ? req.file.path : null,
       confidenceScore,
       priorityScore,
-      explanation
+      explanation,
+      user: req.user.id
     });
 
     await issue.save();
@@ -41,9 +43,14 @@ router.post("/", upload.single("image"), async (req, res) => {
 });
 
 // Get all issues
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const issues = await Issue.find().sort({ createdAt: -1 });
+    let issues;
+    if (req.user.role === 'user') {
+      issues = await Issue.find({ user: req.user.id }).sort({ createdAt: -1 });
+    } else {
+      issues = await Issue.find().sort({ createdAt: -1 });
+    }
     res.json(issues);
   } catch (error) {
     res.status(500).json({ message: error.message });

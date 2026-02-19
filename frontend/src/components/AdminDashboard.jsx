@@ -289,7 +289,7 @@ export default function AdminDashboard({ token }) {
                   <h4>{issue.category}</h4>
                   <p>Location: {issue.location}</p>
                   <p>Priority: {issue.priorityScore}</p>
-                  <p>Status: <span className={`status-${issue.status}`}>{issue.status}</span></p>
+                  <p>Status: <span className={`status-badge status-${issue.status}`}>{issue.status}</span></p>
                   {issue.imageUrl && <img src={`http://localhost:5000/${issue.imageUrl}`} alt="Issue" />}
                 </div>
               ))}
@@ -309,7 +309,7 @@ export default function AdminDashboard({ token }) {
                       <h4>{task.issue?.category}</h4>
                       <p>Location: {task.issue?.location}</p>
                       <p>Worker: {workerData.worker.name}</p>
-                      <p>Status: <span className={`status-${task.status}`}>{task.status}</span></p>
+                      <p>Status: <span className={`status-badge status-${task.status.replace(/\s+/g, '')}`}>{task.status}</span></p>
                       <p>Due: {new Date(task.dueDate).toLocaleDateString()}</p>
                     </div>
                   ))

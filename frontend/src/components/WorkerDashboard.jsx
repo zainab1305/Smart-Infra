@@ -183,6 +183,7 @@ export default function WorkerDashboard({ token }) {
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Priority: {task.issueId?.priorityScore}</p>
+                      <p>Status: <span className={`status-badge status-${task.status.replace(/\s+/g, '')}`}>{task.status}</span></p>
                       <button onClick={() => setSelectedTask(task)} className="view-btn">
                         View Details
                       </button>
@@ -197,6 +198,7 @@ export default function WorkerDashboard({ token }) {
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Priority: {task.issueId?.priorityScore}</p>
+                      <p>Status: <span className={`status-badge status-${task.status.replace(/\s+/g, '')}`}>{task.status}</span></p>
                       <button onClick={() => setSelectedTask(task)} className="view-btn">
                         View Details
                       </button>
@@ -210,6 +212,7 @@ export default function WorkerDashboard({ token }) {
                     <div key={task._id} className="task-card completed">
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
+                      <p>Status: <span className={`status-badge status-${task.status.replace(/\s+/g, '')}`}>{task.status}</span></p>
                       <p>Completed on: {new Date(task.updatedAt).toLocaleDateString()}</p>
                     </div>
                   ))}

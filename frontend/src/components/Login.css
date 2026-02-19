@@ -333,23 +333,38 @@
 }
 
 .status-Reported {
-  color: #ff9800;
+  background-color: #ff9800;
+  color: white;
 }
 
 .status-Assigned {
-  color: #2196f3;
+  background-color: #2196f3;
+  color: white;
 }
 
 .status-Resolved {
-  color: #4caf50;
+  background-color: #4caf50;
+  color: white;
 }
 
 .status-Pending {
-  color: #ff9800;
+  background-color: #ff9800;
+  color: white;
 }
 
-.status-In {
-  color: #2196f3;
+.status-InProgress {
+  background-color: #2196f3;
+  color: white;
+}
+
+.status-Completed {
+  background-color: #4caf50;
+  color: white;
+}
+
+.status-Rejected {
+  background-color: #f44336;
+  color: white;
 }
 
 .task-stats {
