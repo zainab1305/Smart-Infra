@@ -29,6 +29,9 @@ export default function AdminDashboard({ token }) {
 
   useEffect(() => {
     fetchDashboardData();
+    // Auto-refresh every 10 seconds
+    const interval = setInterval(fetchDashboardData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchDashboardData = async () => {
@@ -137,7 +140,12 @@ export default function AdminDashboard({ token }) {
         {/* Dashboard Home */}
         {activeSection === "home" && (
           <div className="section">
-            <h2>Weekly Dashboard Summary</h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h2>Weekly Dashboard Summary</h2>
+              <button onClick={fetchDashboardData} disabled={loading} style={{ padding: "8px 16px", cursor: "pointer" }}>
+                🔄 Refresh
+              </button>
+            </div>
             <div className="stats-grid">
               <div className="stat-card">
                 <h3>Total Workers</h3>
@@ -288,7 +296,8 @@ export default function AdminDashboard({ token }) {
                 <div key={issue._id} className="issue-card">
                   <h4>{issue.category}</h4>
                   <p>Location: {issue.location}</p>
-                  <p>Priority: {issue.priorityScore}</p>
+                  <p>Priority: {issue.priorityScore}/100</p>
+                  <p>Confidence: {(issue.confidenceScore * 100).toFixed(1)}%</p>
                   <p>Status: <span className={`status-badge status-${issue.status}`}>{issue.status}</span></p>
                   {issue.imageUrl && <img src={`http://localhost:5000/${issue.imageUrl}`} alt="Issue" />}
                 </div>

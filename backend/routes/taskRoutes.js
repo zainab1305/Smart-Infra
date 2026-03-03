@@ -187,8 +187,11 @@ router.get("/dashboard/week-summary", authMiddleware, adminOnly, async (req, res
         };
       }
       workerStats[workerId].totalTasks++;
-      workerStats[workerId][task.status.toLowerCase()] =
-        (workerStats[workerId][task.status.toLowerCase()] || 0) + 1;
+      
+      // Convert status to proper key (handle "In Progress" -> "inProgress")
+      const statusKey = task.status === "In Progress" ? "inProgress" : task.status.toLowerCase();
+      workerStats[workerId][statusKey] =
+        (workerStats[workerId][statusKey] || 0) + 1;
       workerStats[workerId].tasks.push({
         id: task._id,
         issue: task.issueId,

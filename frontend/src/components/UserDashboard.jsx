@@ -14,6 +14,9 @@ export default function UserDashboard({ token }) {
 
   useEffect(() => {
     fetchIssues();
+    // Auto-refresh every 10 seconds to see status updates
+    const interval = setInterval(fetchIssues, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchIssues = async () => {
@@ -113,7 +116,12 @@ export default function UserDashboard({ token }) {
 
           {error && <div className="error-message">{error}</div>}
 
-          <h2>Your Reported Issues</h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <h2>Your Reported Issues</h2>
+            <button onClick={fetchIssues} disabled={loading} style={{ padding: "8px 16px", cursor: "pointer" }}>
+              🔄 Refresh
+            </button>
+          </div>
           <div className="issues-list">
             {issues.length === 0 ? (
               <p>No issues reported yet</p>
@@ -131,8 +139,6 @@ export default function UserDashboard({ token }) {
 
                   <p><strong>Location:</strong> {issue.location}</p>
                   <p><strong>Reported:</strong> {new Date(issue.createdAt).toLocaleDateString()}</p>
-                  <p><strong>Priority:</strong> {issue.priorityScore}/100</p>
-                  <p><strong>Confidence:</strong> {(issue.confidenceScore * 100).toFixed(1)}%</p>
 
                   {issue.explanation && (
                     <div className="explanation">
