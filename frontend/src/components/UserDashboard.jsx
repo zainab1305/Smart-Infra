@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Login.css";
+import "./Dashboard.css";
 
 export default function UserDashboard({ token }) {
   const [issues, setIssues] = useState([]);
@@ -112,14 +112,36 @@ export default function UserDashboard({ token }) {
             <button type="submit" disabled={loading}>
               {loading ? "Reporting..." : "Report Issue"}
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setNewIssue({ category: "Road Damage", location: "" });
+                setImageFile(null);
+              }}
+              disabled={loading}
+              style={{
+                padding: "10px 16px",
+                background: "transparent",
+                color: "#60a5fa",
+                border: "2px solid #60a5fa",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "600",
+                transition: "all 0.3s ease",
+                marginLeft: "8px",
+              }}
+            >
+              ↻ Reset
+            </button>
           </form>
 
           {error && <div className="error-message">{error}</div>}
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <h2>Your Reported Issues</h2>
-            <button onClick={fetchIssues} disabled={loading} style={{ padding: "8px 16px", cursor: "pointer" }}>
-              🔄 Refresh
+            <button onClick={fetchIssues} disabled={loading} style={{ padding: "10px 16px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", transition: "all 0.3s ease" }}>
+              🔄 {loading ? "Refreshing..." : "Refresh"}
             </button>
           </div>
           <div className="issues-list">

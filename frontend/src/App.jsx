@@ -34,20 +34,28 @@ function App() {
     return <Login onLogin={handleLogin} />;
   }
 
+  // Admin dashboard handles its own layout
+  if (user?.role === "admin") {
+    return <AdminDashboard token={token} onLogout={handleLogout} />;
+  }
+
+  // Other dashboards use the standard wrapper layout
   return (
     <div className="app">
-      <header className="app-header">
+      <header className="dashboard-header">
         <h1>Smart Infrastructure Management</h1>
-        <div className="user-info">
-          <span>{user?.role.toUpperCase()}: {user?.name || user?.email}</span>
+        <div className="header-actions">
+          <div className="user-info">
+            <span>{user?.role?.toUpperCase()}</span>
+            <span>{user?.name || user?.email}</span>
+          </div>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
         </div>
       </header>
 
       <main>
-        {user?.role === "admin" && <AdminDashboard token={token} />}
-        {user?.role === "user" && <UserDashboard token={token} />}
-        {user?.role === "worker" && <WorkerDashboard token={token} />}
+        {user?.role === "user" && <UserDashboard token={token} onLogout={handleLogout} />}
+        {user?.role === "worker" && <WorkerDashboard token={token} onLogout={handleLogout} />}
       </main>
     </div>
   );

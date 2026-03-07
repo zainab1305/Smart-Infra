@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Login.css";
+import "./Dashboard.css";
+import {
+  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+} from "recharts";
 
 export default function WorkerDashboard({ token }) {
   const [activeSection, setActiveSection] = useState("tasks");
@@ -225,27 +228,83 @@ export default function WorkerDashboard({ token }) {
         {activeSection === "progress" && (
           <div className="section">
             <h2>Your Weekly Progress</h2>
-            <div className="stats-grid">
-              <div className="stat-card">
+            
+            <div className="charts-container">
+              {/* Completion Rate Pie Chart */}
+              <div className="chart-box completion-chart-box">
                 <h3>Completion Rate</h3>
-                <p className="stat-number">
-                  {myTasks.length > 0
-                    ? Math.round((completedTasks.length / myTasks.length) * 100)
-                    : 0}
-                  %
-                </p>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={[
+                        {
+                          name: "Completed",
+                          value: myTasks.length > 0 ? Math.round((completedTasks.length / myTasks.length) * 100) : 0,
+                        },
+                        {
+                          name: "Remaining",
+                          value: myTasks.length > 0 ? 100 - Math.round((completedTasks.length / myTasks.length) * 100) : 100,
+                        },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({ name, value }) => `${name}: ${value}%`}
+                    >
+                      <Cell fill="#22c55e" />
+                      <Cell fill="rgba(59, 130, 246, 0.2)" />
+                    </Pie>
+                    <Tooltip formatter={(value) => `${value}%`} />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
-              <div className="stat-card">
-                <h3>Tasks Completed</h3>
-                <p className="stat-number">{completedTasks.length}</p>
-              </div>
-              <div className="stat-card">
-                <h3>Tasks in Progress</h3>
-                <p className="stat-number">{inProgressTasks.length}</p>
-              </div>
-              <div className="stat-card">
-                <h3>Pending Response</h3>
-                <p className="stat-number">{pendingTasks.length}</p>
+
+              {/* Task Status Chart */}
+              <div className="chart-box tasks-chart-box">
+                <h3>Task Distribution</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={[
+                      {
+                        name: "Completed",
+                        value: completedTasks.length,
+                        fill: "#22c55e",
+                      },
+                      {
+                        name: "In Progress",
+                        value: inProgressTasks.length,
+                        fill: "#3b82f6",
+                      },
+                      {
+                        name: "Pending",
+                        value: pendingTasks.length,
+                        fill: "#f59e0b",
+                      },
+                    ]}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.2)" />
+                    <XAxis dataKey="name" stroke="#cbd5e1" style={{ fontSize: "0.75rem" }} />
+                    <YAxis stroke="#cbd5e1" style={{ fontSize: "0.75rem" }} />
+                    <Tooltip
+                      cursor={{ fill: "rgba(59, 130, 246, 0.1)" }}
+                      contentStyle={{
+                        backgroundColor: "rgba(15, 23, 42, 0.95)",
+                        border: "1px solid rgba(59, 130, 246, 0.3)",
+                        borderRadius: "6px",
+                        color: "#e2e8f0",
+                      }}
+                    />
+                    <Bar dataKey="value" fill="#8884d8" radius={6}>
+                      <Cell fill="#22c55e" />
+                      <Cell fill="#3b82f6" />
+                      <Cell fill="#f59e0b" />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>

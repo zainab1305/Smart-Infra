@@ -2,8 +2,11 @@ import { useState } from "react";
 import axios from "axios";
 import "./Login.css";
 
+// Background image path (ensure file is in public folder)
+const BG_IMAGE = "\ej-yao-D46mXLsQRJw-unsplash.jpg";
+
 export default function Login({ onLogin }) {
-  const [activeTab, setActiveTab] = useState("admin");
+  const [selectedRole, setSelectedRole] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -104,38 +107,25 @@ export default function Login({ onLogin }) {
     }
   };
 
-  return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>Smart Infrastructure Dashboard</h1>
-        
-        <div className="tabs">
-          <button
-            className={`tab ${activeTab === "admin" ? "active" : ""}`}
-            onClick={() => setActiveTab("admin")}
-          >
-            Admin
-          </button>
-          <button
-            className={`tab ${activeTab === "user" ? "active" : ""}`}
-            onClick={() => setActiveTab("user")}
-          >
-            User
-          </button>
-          <button
-            className={`tab ${activeTab === "worker" ? "active" : ""}`}
-            onClick={() => setActiveTab("worker")}
-          >
-            Worker
-          </button>
-        </div>
+  if (selectedRole) {
+    return (
+      <div className="login-expanded-container" style={{ backgroundImage: `url('${BG_IMAGE}')` }}>
+        <button 
+          className="back-to-columns-btn"
+          onClick={() => {
+            setSelectedRole(null);
+            setError("");
+          }}
+        >
+          ← Back to Login Options
+        </button>
 
         {error && <div className="error-message">{error}</div>}
-
-        {/* Admin Login */}
-        {activeTab === "admin" && (
-          <form onSubmit={handleAdminLogin} className="form">
-            <h2>Admin Login</h2>
+        
+        {selectedRole === "admin" && (
+          <form onSubmit={handleAdminLogin} className="expanded-form">
+            <h2 className="form-title">Admin Portal</h2>
+            <p className="form-subtitle">Manage infrastructure and workforce with precision</p>
             <input
               type="email"
               placeholder="Admin Email"
@@ -153,18 +143,18 @@ export default function Login({ onLogin }) {
             <button type="submit" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </button>
-            <p style={{ marginTop: "10px", fontSize: "12px", color: "#666" }}>
+            <p style={{ marginTop: "15px", fontSize: "12px", color: "#a0aec0", textAlign: "center" }}>
               Default: admin@smartinfra.com / admin123
             </p>
           </form>
         )}
 
-        {/* User Login/Register */}
-        {activeTab === "user" && (
+        {selectedRole === "user" && (
           <>
             {!isRegister ? (
-              <form onSubmit={handleUserLogin} className="form">
-                <h2>User Login</h2>
+              <form onSubmit={handleUserLogin} className="expanded-form">
+                <h2 className="form-title">Report Issues</h2>
+                <p className="form-subtitle">Submit infrastructure problems in real-time</p>
                 <input
                   type="email"
                   placeholder="Email"
@@ -182,7 +172,7 @@ export default function Login({ onLogin }) {
                 <button type="submit" disabled={loading}>
                   {loading ? "Logging in..." : "Login"}
                 </button>
-                <p style={{ marginTop: "15px", textAlign: "center" }}>
+                <p style={{ marginTop: "15px", textAlign: "center", color: "#a0aec0" }}>
                   Don't have an account?{" "}
                   <button
                     type="button"
@@ -194,8 +184,9 @@ export default function Login({ onLogin }) {
                 </p>
               </form>
             ) : (
-              <form onSubmit={handleUserRegister} className="form">
-                <h2>User Registration</h2>
+              <form onSubmit={handleUserRegister} className="expanded-form">
+                <h2 className="form-title">Create Account</h2>
+                <p className="form-subtitle">Join our community and start reporting</p>
                 <input
                   type="text"
                   placeholder="Full Name"
@@ -226,7 +217,7 @@ export default function Login({ onLogin }) {
                 <button type="submit" disabled={loading}>
                   {loading ? "Registering..." : "Register"}
                 </button>
-                <p style={{ marginTop: "15px", textAlign: "center" }}>
+                <p style={{ marginTop: "15px", textAlign: "center", color: "#a0aec0" }}>
                   Already have an account?{" "}
                   <button
                     type="button"
@@ -241,10 +232,10 @@ export default function Login({ onLogin }) {
           </>
         )}
 
-        {/* Worker Login */}
-        {activeTab === "worker" && (
-          <form onSubmit={handleWorkerLogin} className="form">
-            <h2>Worker Login</h2>
+        {selectedRole === "worker" && (
+          <form onSubmit={handleWorkerLogin} className="expanded-form">
+            <h2 className="form-title">Worker Access</h2>
+            <p className="form-subtitle">Login to view and complete assigned tasks</p>
             <input
               type="text"
               placeholder="Worker ID"
@@ -262,11 +253,62 @@ export default function Login({ onLogin }) {
             <button type="submit" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </button>
-            <p style={{ marginTop: "10px", fontSize: "12px", color: "#666" }}>
+            <p style={{ marginTop: "15px", fontSize: "12px", color: "#a0aec0", textAlign: "center" }}>
               Contact your admin for Worker ID and password
             </p>
           </form>
         )}
+      </div>
+    );
+  }
+
+  // Three Column View
+  return (
+    <div className="login-columns-container" style={{ backgroundImage: `url('${BG_IMAGE}')` }}>
+      <div className="columns-header">
+        <h1>Smart Infrastructure Dashboard</h1>
+        <p>Select your role to login</p>
+      </div>
+
+      <div className="columns-grid">
+        {/* Admin Column */}
+        <div 
+          className="login-column admin-column"
+          onClick={() => setSelectedRole("admin")}
+        >
+          <div className="column-content">
+            <div className="column-icon">👨‍💼</div>
+            <h2>Admin</h2>
+            <p>Manage infrastructure and assign tasks</p>
+            <button className="column-btn">Login as Admin</button>
+          </div>
+        </div>
+
+        {/* User Column */}
+        <div 
+          className="login-column user-column"
+          onClick={() => setSelectedRole("user")}
+        >
+          <div className="column-content">
+            <div className="column-icon">👤</div>
+            <h2>User</h2>
+            <p>Report infrastructure issues</p>
+            <button className="column-btn">Login as User</button>
+          </div>
+        </div>
+
+        {/* Worker Column */}
+        <div 
+          className="login-column worker-column"
+          onClick={() => setSelectedRole("worker")}
+        >
+          <div className="column-content">
+            <div className="column-icon">👷</div>
+            <h2>Worker</h2>
+            <p>Accept and complete assigned tasks</p>
+            <button className="column-btn">Login as Worker</button>
+          </div>
+        </div>
       </div>
     </div>
   );
