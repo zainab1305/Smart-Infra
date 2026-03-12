@@ -21,8 +21,8 @@ const taskSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "In Progress", "Completed", "Rejected"],
-      default: "Pending",
+      enum: ["Scheduled", "In Progress", "Completed", "Rejected", "Pending"],
+      default: "Scheduled",
     },
     workerResponse: {
       accepted: {

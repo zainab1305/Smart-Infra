@@ -9,8 +9,11 @@ export default function AdminDashboard({ token, onLogout }) {
   const [activeSection, setActiveSection] = useState("home");
   const [users, setUsers] = useState([]);
   const [issues, setIssues] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [weekSummary, setWeekSummary] = useState(null);
+  const [priorityList, setPriorityList] = useState([]);
+  const [priorityLoading, setPriorityLoading] = useState(false);
+  const [lastPriorityGeneratedAt, setLastPriorityGeneratedAt] = useState("");
+  const [lastReportedSignature, setLastReportedSignature] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -36,6 +39,54 @@ export default function AdminDashboard({ token, onLogout }) {
     const interval = setInterval(fetchDashboardData, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!issues.length) {
+      return;
+    }
+
+    const reported = issues
+      .filter((issue) => issue.status === "Reported")
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+    const signature = `${reported.length}-${reported.map((issue) => issue._id).join("|")}`;
+
+    if (!lastReportedSignature) {
+      setLastReportedSignature(signature);
+      return;
+    }
+
+    const hasNewReportedComplaints = signature !== lastReportedSignature;
+    if (hasNewReportedComplaints && (activeSection === "priority" || priorityList.length > 0)) {
+      handleGeneratePriorityList(true);
+    }
+
+    setLastReportedSignature(signature);
+  }, [issues, activeSection]);
+
+  const normalizeLocation = (value = "") =>
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const isSimilarArea = (locationA = "", locationB = "") => {
+    const a = normalizeLocation(locationA);
+    const b = normalizeLocation(locationB);
+
+    if (!a || !b) return false;
+    if (a === b) return true;
+    if (a.includes(b) || b.includes(a)) return true;
+
+    const setA = new Set(a.split(" ").filter(Boolean));
+    const setB = new Set(b.split(" ").filter(Boolean));
+    const overlap = [...setA].filter((token) => setB.has(token)).length;
+    const union = new Set([...setA, ...setB]).size;
+    const jaccard = union ? overlap / union : 0;
+
+    return jaccard >= 0.6;
+  };
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -104,24 +155,76 @@ export default function AdminDashboard({ token, onLogout }) {
     }
   };
 
+  const handleGeneratePriorityList = async (silent = false) => {
+    setPriorityLoading(true);
+    if (!silent) {
+      setError("");
+    }
+
+    try {
+      const res = await axios.get("http://localhost:5000/api/issues/priority-list", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const incoming = res.data.issues || [];
+      const grouped = [];
+
+      incoming.forEach((issue) => {
+        const existing = grouped.find(
+          (item) => item.category === issue.category && isSimilarArea(item.location, issue.location)
+        );
+
+        if (!existing) {
+          grouped.push({ ...issue });
+          return;
+        }
+
+        existing.repeatComplaintCount = Math.max(
+          Number(existing.repeatComplaintCount || 1),
+          Number(issue.repeatComplaintCount || 1)
+        );
+        existing.priorityScore = Math.max(
+          Number(existing.priorityScore || 0),
+          Number(issue.priorityScore || 0)
+        );
+      });
+
+      grouped.sort((a, b) => {
+        if (b.priorityScore !== a.priorityScore) return b.priorityScore - a.priorityScore;
+        return (b.repeatComplaintCount || 0) - (a.repeatComplaintCount || 0);
+      });
+
+      setPriorityList(grouped);
+      setLastPriorityGeneratedAt(new Date().toLocaleString());
+    } catch (err) {
+      if (!silent) {
+        setError(err.response?.data?.message || "Failed to generate priority list");
+      }
+    } finally {
+      setPriorityLoading(false);
+    }
+  };
+
   const workers = users.filter((u) => u.role === "worker");
   const regularUsers = users.filter((u) => u.role === "user");
-  const unassignedIssues = issues.filter((i) => i.status === "Reported");
-  const completedIssues = issues.filter((i) => i.status === "Resolved");
-  const issuePriorities = issues.filter((i) => i.priorityScore);
+  const reportedIssues = issues.filter((i) => i.status === "Reported");
 
   // Prepare chart data
   const issueStatusData = [
     { name: "Reported", value: issues.filter(i => i.status === "Reported").length },
-    { name: "Assigned", value: issues.filter(i => i.status === "Assigned").length },
-    { name: "Resolved", value: issues.filter(i => i.status === "Resolved").length },
+    { name: "Scheduled", value: issues.filter(i => i.status === "Scheduled" || i.status === "Assigned").length },
+    { name: "In Progress", value: issues.filter(i => i.status === "In Progress").length },
+    { name: "Completed", value: issues.filter(i => i.status === "Completed" || i.status === "Resolved").length },
+    { name: "Rejected", value: issues.filter(i => i.status === "Rejected").length },
   ];
 
   // Line chart data for Issue Status - 7 days of data for proper graph visualization
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const reportedCount = issueStatusData[0].value || 0;
-  const assignedCount = issueStatusData[1].value || 0;
-  const resolvedCount = issueStatusData[2].value || 0;
+  const scheduledCount = issueStatusData[1].value || 0;
+  const inProgressCount = issueStatusData[2].value || 0;
+  const completedCount = issueStatusData[3].value || 0;
+  const rejectedCount = issueStatusData[4].value || 0;
   
   const issueStatusLineData = days.map((day, index) => {
     // Create realistic trends with some variation
@@ -129,12 +232,12 @@ export default function AdminDashboard({ token, onLogout }) {
     return {
       day: day,
       Reported: Math.max(0, Math.round(reportedCount * (0.8 + Math.random() * 0.6))),
-      Assigned: Math.max(0, Math.round(assignedCount * (0.7 + dayFactor * 0.8 + Math.random() * 0.3))),
-      Resolved: Math.max(0, Math.round(resolvedCount * dayFactor + Math.random() * (resolvedCount * 0.2))),
+      Scheduled: Math.max(0, Math.round(scheduledCount * (0.7 + dayFactor * 0.6 + Math.random() * 0.2))),
+      "In Progress": Math.max(0, Math.round(inProgressCount * (0.65 + dayFactor * 0.7 + Math.random() * 0.2))),
+      Completed: Math.max(0, Math.round(completedCount * dayFactor + Math.random() * (completedCount * 0.2))),
+      Rejected: Math.max(0, Math.round(rejectedCount * (0.5 + Math.random() * 0.4))),
     };
   });
-
-  const COLORS = ["#f97316", "#3b82f6", "#22c55e"];
 
   return (
     <div className="dashboard">
@@ -166,6 +269,15 @@ export default function AdminDashboard({ token, onLogout }) {
           onClick={() => setActiveSection("tasks")}
         >
           📋 Tasks
+        </button>
+        <button
+          className={`nav-btn ${activeSection === "priority" ? "active" : ""}`}
+          onClick={() => {
+            setActiveSection("priority");
+            handleGeneratePriorityList(true);
+          }}
+        >
+          ⚡ Priority List
         </button>
         <div style={{ marginTop: "auto", padding: "20px 15px", borderTop: "1px solid rgba(59, 130, 246, 0.1)" }}>
           <button
@@ -227,8 +339,8 @@ export default function AdminDashboard({ token, onLogout }) {
                     <span className="value">{issues.length}</span>
                   </div>
                   <div className="analytics-item">
-                    <label>Unassigned Issues</label>
-                    <span className="value">{unassignedIssues.length}</span>
+                    <label>Reported Issues</label>
+                    <span className="value">{reportedIssues.length}</span>
                   </div>
                 </div>
               </div>
@@ -266,7 +378,7 @@ export default function AdminDashboard({ token, onLogout }) {
                       />
                       <Line 
                         type="natural"
-                        dataKey="Assigned" 
+                        dataKey="Scheduled" 
                         stroke="#3b82f6" 
                         strokeWidth={2.5}
                         isAnimationActive={true}
@@ -275,11 +387,29 @@ export default function AdminDashboard({ token, onLogout }) {
                       />
                       <Line 
                         type="natural"
-                        dataKey="Resolved" 
+                        dataKey="In Progress" 
+                        stroke="#f59e0b" 
+                        strokeWidth={2.5}
+                        isAnimationActive={true}
+                        dot={{ fill: "#f59e0b", r: 3 }}
+                        activeDot={{ r: 5 }}
+                      />
+                      <Line 
+                        type="natural"
+                        dataKey="Completed" 
                         stroke="#22c55e" 
                         strokeWidth={2.5}
                         isAnimationActive={true}
                         dot={{ fill: "#22c55e", r: 3 }}
+                        activeDot={{ r: 5 }}
+                      />
+                      <Line 
+                        type="natural"
+                        dataKey="Rejected" 
+                        stroke="#ef4444" 
+                        strokeWidth={2.5}
+                        isAnimationActive={true}
+                        dot={{ fill: "#ef4444", r: 3 }}
                         activeDot={{ r: 5 }}
                       />
                     </LineChart>
@@ -340,7 +470,7 @@ export default function AdminDashboard({ token, onLogout }) {
                         <span style={{ color: "#cbd5e1" }}>📋 Total Tasks: <strong style={{ color: "#f5f7fa" }}>{workerData.totalTasks}</strong></span>
                         <span style={{ color: "#22c55e" }}>✓ Completed: <strong>{workerData.completed}</strong></span>
                         <span style={{ color: "#3b82f6" }}>⏳ In Progress: <strong>{workerData.inProgress}</strong></span>
-                        <span style={{ color: "#f59e0b" }}>⏸ Pending: <strong>{workerData.pending}</strong></span>
+                        <span style={{ color: "#f59e0b" }}>⏸ Scheduled: <strong>{workerData.scheduled}</strong></span>
                         <span style={{ color: "#ef4444" }}>✗ Rejected: <strong>{workerData.rejected}</strong></span>
                       </div>
                     </div>
@@ -425,7 +555,7 @@ export default function AdminDashboard({ token, onLogout }) {
                 required
               >
                 <option value="">Select Issue</option>
-                {unassignedIssues.map((issue) => (
+                {reportedIssues.map((issue) => (
                   <option key={issue._id} value={issue._id}>
                     {issue.category} - {issue.location}
                   </option>
@@ -460,12 +590,14 @@ export default function AdminDashboard({ token, onLogout }) {
                   <h4>{issue.category}</h4>
                   <p>Location: {issue.location}</p>
                   <p>Priority: {issue.priorityScore}/100</p>
+                  <p>Repeat Complaints: {issue.repeatComplaintCount || 1}</p>
                   <p>Confidence: {(issue.confidenceScore * 100).toFixed(1)}%</p>
-                  <p>Status: <span className={`status-badge status-${issue.status}`}>{issue.status}</span></p>
+                  <p>Status: <span className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}>{issue.status}</span></p>
                   {issue.imageUrl && <img src={`http://localhost:5000/${issue.imageUrl}`} alt="Issue" />}
                 </div>
               ))}
             </div>
+
           </div>
         )}
 
@@ -488,6 +620,58 @@ export default function AdminDashboard({ token, onLogout }) {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Priority List */}
+        {activeSection === "priority" && (
+          <div className="section">
+            <h2>Priority List</h2>
+            <div className="component-section">
+              <p style={{ color: "#94a3b8", marginBottom: "10px", fontSize: "0.9rem" }}>
+                One entry per same/similar area issue. Regenerates when new complaints are detected.
+              </p>
+              <button
+                onClick={() => handleGeneratePriorityList(false)}
+                disabled={priorityLoading}
+                style={{
+                  padding: "10px 16px",
+                  background: "#3b82f6",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "700",
+                  marginBottom: "12px",
+                }}
+              >
+                {priorityLoading ? "Generating..." : "Generate Priority List"}
+              </button>
+
+              {lastPriorityGeneratedAt && (
+                <p style={{ color: "#94a3b8", marginBottom: "12px", fontSize: "0.85rem" }}>
+                  Last generated: {lastPriorityGeneratedAt}
+                </p>
+              )}
+
+              {priorityList.length > 0 && (
+                <div className="tasks-list">
+                  {priorityList.map((issue, index) => (
+                    <div key={`${issue.category}-${issue.location}`} className="task-card">
+                      <h4>#{index + 1} {issue.category}</h4>
+                      <p>Location: {issue.location}</p>
+                      <p>Priority Score: <strong>{issue.priorityScore}</strong></p>
+                      <p>Repeat Complaints: <strong>{issue.repeatComplaintCount || 1}</strong></p>
+                      <p>Status: <span className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}>{issue.status}</span></p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!priorityLoading && priorityList.length === 0 && (
+                <p style={{ color: "#94a3b8" }}>No priority list generated yet.</p>
+              )}
+            </div>
           </div>
         )}
       </div>

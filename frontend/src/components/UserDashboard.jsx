@@ -153,7 +153,7 @@ export default function UserDashboard({ token }) {
                   <div className="issue-header">
                     <h3>{issue.category}</h3>
                     <span
-                      className={`status-badge status-${issue.status}`}
+                      className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}
                     >
                       {issue.status}
                     </span>

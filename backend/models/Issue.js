@@ -21,12 +21,25 @@ const issueSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    repeatComplaintCount: {
+      type: Number,
+      default: 1,
+    },
     explanation: {
       type: String,
     },
     status: {
       type: String,
-      enum: ["Reported", "Assigned", "Resolved"],
+      enum: [
+        "Reported",
+        "Scheduled",
+        "In Progress",
+        "Completed",
+        "Rejected",
+        // Legacy values preserved for older records.
+        "Assigned",
+        "Resolved",
+      ],
       default: "Reported",
     },
     user: {

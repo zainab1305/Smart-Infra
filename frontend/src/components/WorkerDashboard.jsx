@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
 import {
-  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 
 export default function WorkerDashboard({ token }) {
@@ -74,9 +74,12 @@ export default function WorkerDashboard({ token }) {
     }
   };
 
-  const pendingTasks = myTasks.filter((t) => t.status === "Pending");
+  const scheduledTasks = myTasks.filter((t) => t.status === "Scheduled" || t.status === "Pending");
   const inProgressTasks = myTasks.filter((t) => t.status === "In Progress");
   const completedTasks = myTasks.filter((t) => t.status === "Completed");
+  const rejectedTasks = myTasks.filter((t) => t.status === "Rejected");
+  const currentTasks = [...scheduledTasks, ...inProgressTasks];
+  const historyTasks = [...completedTasks, ...rejectedTasks];
 
   return (
     <div className="dashboard">
@@ -100,12 +103,12 @@ export default function WorkerDashboard({ token }) {
 
         {activeSection === "tasks" && (
           <div className="section">
-            <h2>My Weekly Tasks</h2>
+            <h2>My Assigned Tasks</h2>
 
             <div className="stats-grid">
               <div className="stat-card">
-                <h3>Pending</h3>
-                <p className="stat-number">{pendingTasks.length}</p>
+                <h3>Scheduled</h3>
+                <p className="stat-number">{scheduledTasks.length}</p>
               </div>
               <div className="stat-card">
                 <h3>In Progress</h3>
@@ -116,8 +119,8 @@ export default function WorkerDashboard({ token }) {
                 <p className="stat-number">{completedTasks.length}</p>
               </div>
               <div className="stat-card">
-                <h3>Total</h3>
-                <p className="stat-number">{myTasks.length}</p>
+                <h3>Rejected</h3>
+                <p className="stat-number">{rejectedTasks.length}</p>
               </div>
             </div>
 
@@ -131,9 +134,9 @@ export default function WorkerDashboard({ token }) {
                 <p><strong>Location:</strong> {selectedTask.issueId?.location}</p>
                 <p><strong>Priority:</strong> {selectedTask.issueId?.priorityScore}</p>
                 <p><strong>Status:</strong> {selectedTask.status}</p>
-                <p><strong>Due Date:</strong> {new Date(selectedTask.dueDate).toLocaleDateString()}</p>
+                <p><strong>Due Date:</strong> {selectedTask.dueDate ? new Date(selectedTask.dueDate).toLocaleDateString() : "Not set"}</p>
 
-                {selectedTask.status === "Pending" && (
+                {(selectedTask.status === "Scheduled" || selectedTask.status === "Pending") && (
                   <div className="response-form">
                     <h4>What would you like to do?</h4>
                     <div className="button-group">
@@ -180,22 +183,22 @@ export default function WorkerDashboard({ token }) {
             ) : (
               <div className="tasks-list">
                 <div className="task-section">
-                  <h3>⏸ Pending Tasks ({pendingTasks.length})</h3>
-                  {pendingTasks.map((task) => (
+                  <h3>Current Tasks</h3>
+                  <p style={{ color: "#94a3b8", marginBottom: "8px", fontSize: "0.85rem" }}>
+                    Scheduled and In Progress tasks requiring action
+                  </p>
+                  {currentTasks.length === 0 && <p style={{ color: "#94a3b8" }}>No current tasks</p>}
+                  {scheduledTasks.map((task) => (
                     <div key={task._id} className="task-card">
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Priority: {task.issueId?.priorityScore}</p>
-                      <p>Status: <span className={`status-badge status-${task.status.replace(/\s+/g, '')}`}>{task.status}</span></p>
+                      <p>Status: <span className="status-badge status-Scheduled">Scheduled</span></p>
                       <button onClick={() => setSelectedTask(task)} className="view-btn">
                         View Details
                       </button>
                     </div>
                   ))}
-                </div>
-
-                <div className="task-section">
-                  <h3>⏳ In Progress Tasks ({inProgressTasks.length})</h3>
                   {inProgressTasks.map((task) => (
                     <div key={task._id} className="task-card">
                       <h4>{task.issueId?.category}</h4>
@@ -210,13 +213,26 @@ export default function WorkerDashboard({ token }) {
                 </div>
 
                 <div className="task-section">
-                  <h3>✓ Completed Tasks ({completedTasks.length})</h3>
+                  <h3>Task History</h3>
+                  <p style={{ color: "#94a3b8", marginBottom: "8px", fontSize: "0.85rem" }}>
+                    Completed and Rejected tasks
+                  </p>
+                  {historyTasks.length === 0 && <p style={{ color: "#94a3b8" }}>No task history yet</p>}
                   {completedTasks.map((task) => (
                     <div key={task._id} className="task-card completed">
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Status: <span className={`status-badge status-${task.status.replace(/\s+/g, '')}`}>{task.status}</span></p>
                       <p>Completed on: {new Date(task.updatedAt).toLocaleDateString()}</p>
+                    </div>
+                  ))}
+                  {rejectedTasks.map((task) => (
+                    <div key={task._id} className="task-card">
+                      <h4>{task.issueId?.category}</h4>
+                      <p>{task.issueId?.location}</p>
+                      <p>Status: <span className="status-badge status-Rejected">Rejected</span></p>
+                      <p>Updated on: {new Date(task.updatedAt).toLocaleDateString()}</p>
+                      {task.workerResponse?.feedback && <p>Feedback: {task.workerResponse.feedback}</p>}
                     </div>
                   ))}
                 </div>
@@ -280,9 +296,14 @@ export default function WorkerDashboard({ token }) {
                         fill: "#3b82f6",
                       },
                       {
-                        name: "Pending",
-                        value: pendingTasks.length,
+                        name: "Scheduled",
+                        value: scheduledTasks.length,
                         fill: "#f59e0b",
+                      },
+                      {
+                        name: "Rejected",
+                        value: rejectedTasks.length,
+                        fill: "#ef4444",
                       },
                     ]}
                   >
@@ -302,6 +323,7 @@ export default function WorkerDashboard({ token }) {
                       <Cell fill="#22c55e" />
                       <Cell fill="#3b82f6" />
                       <Cell fill="#f59e0b" />
+                      <Cell fill="#ef4444" />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
