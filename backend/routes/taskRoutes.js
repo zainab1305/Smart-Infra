@@ -15,6 +15,22 @@ const getCurrentWeek = () => {
   return Math.floor(diff / oneDay / 7) + 1;
 };
 
+// Get date range for predefined report durations.
+const getDurationRange = (duration = "week") => {
+  const endDate = new Date();
+  endDate.setHours(23, 59, 59, 999);
+
+  const startDate = new Date(endDate);
+  if (duration === "month") {
+    startDate.setDate(startDate.getDate() - 29);
+  } else {
+    startDate.setDate(startDate.getDate() - 6);
+  }
+  startDate.setHours(0, 0, 0, 0);
+
+  return { startDate, endDate };
+};
+
 // Admin: Assign task to worker
 router.post("/assign", authMiddleware, adminOnly, async (req, res) => {
   try {
@@ -222,6 +238,82 @@ router.get("/dashboard/week-summary", authMiddleware, adminOnly, async (req, res
       weekNumber,
       year,
       summary: Object.values(workerStats),
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Admin: Get predefined report summary for week/month duration.
+router.get("/report-summary", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const duration = req.query.duration === "month" ? "month" : "week";
+    const { startDate, endDate } = getDurationRange(duration);
+
+    const tasks = await Task.find({
+      assignedDate: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    })
+      .populate("workerId", "name workerId")
+      .populate("issueId", "category location");
+
+    const totals = {
+      assigned: tasks.length,
+      completed: 0,
+      inProgress: 0,
+      scheduled: 0,
+      rejected: 0,
+    };
+
+    const workerBreakdown = {};
+
+    tasks.forEach((task) => {
+      const statusBucket =
+        task.status === "Completed"
+          ? "completed"
+          : task.status === "In Progress"
+            ? "inProgress"
+            : task.status === "Rejected"
+              ? "rejected"
+              : "scheduled";
+
+      totals[statusBucket] += 1;
+
+      const workerKey = task.workerId?._id?.toString() || "unassigned";
+      if (!workerBreakdown[workerKey]) {
+        workerBreakdown[workerKey] = {
+          workerName: task.workerId?.name || "Unknown Worker",
+          workerCode: task.workerId?.workerId || "N/A",
+          assigned: 0,
+          completed: 0,
+          inProgress: 0,
+          scheduled: 0,
+          rejected: 0,
+        };
+      }
+
+      workerBreakdown[workerKey].assigned += 1;
+      workerBreakdown[workerKey][statusBucket] += 1;
+    });
+
+    const completionRate = totals.assigned
+      ? Number(((totals.completed / totals.assigned) * 100).toFixed(2))
+      : 0;
+
+    res.json({
+      duration,
+      period: {
+        startDate,
+        endDate,
+      },
+      generatedAt: new Date(),
+      totals: {
+        ...totals,
+        completionRate,
+      },
+      workers: Object.values(workerBreakdown).sort((a, b) => b.assigned - a.assigned),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
