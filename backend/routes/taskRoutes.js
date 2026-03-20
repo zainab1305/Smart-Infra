@@ -3,6 +3,7 @@ const Task = require("../models/Task");
 const Issue = require("../models/Issue");
 const WeeklyReport = require("../models/WeeklyReport");
 const { authMiddleware, adminOnly, workerOrAdmin } = require("../middleware/auth");
+const { autoScheduleIssues } = require("../services/schedulingService");
 
 const router = express.Router();
 
@@ -225,6 +226,68 @@ router.get("/dashboard/week-summary", authMiddleware, adminOnly, async (req, res
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Admin: Get diagnostic info (debug issues)
+router.get("/diagnostic/status", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const issuesByStatus = await Issue.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const workers = await User.find({ role: "worker" }).select("_id name email isActive workerId");
+    const activeWorkers = workers.filter(w => w.isActive);
+
+    res.json({
+      issuesByStatus,
+      totalIssues: await Issue.countDocuments(),
+      totalWorkers: workers.length,
+      activeWorkers: activeWorkers.length,
+      workers: workers.map(w => ({
+        id: w._id,
+        name: w.name,
+        email: w.email,
+        workerId: w.workerId,
+        isActive: w.isActive
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Admin: Auto-schedule unassigned issues to available workers
+router.post("/auto-schedule", authMiddleware, adminOnly, async (req, res) => {
+  console.log("[AUTO-SCHEDULE] Request received from user:", req.user?.id);
+  try {
+    const result = await autoScheduleIssues();
+    console.log("[AUTO-SCHEDULE] Result:", result);
+    
+    if (result.success) {
+      return res.status(200).json({
+        message: result.message,
+        scheduledCount: result.scheduled,
+        totalUnassigned: result.total,
+        availableWorkers: result.workers,
+        details: result.details
+      });
+    } else {
+      console.log("[AUTO-SCHEDULE] Failed - returning 400");
+      return res.status(400).json({
+        message: result.message,
+        error: result.error,
+        scheduledCount: result.scheduled
+      });
+    }
+  } catch (error) {
+    console.error("[AUTO-SCHEDULE] Exception caught:", error);
+    return res.status(500).json({ message: `Server error: ${error.message}` });
   }
 });
 

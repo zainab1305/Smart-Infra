@@ -16,6 +16,8 @@ export default function AdminDashboard({ token, onLogout }) {
   const [lastReportedSignature, setLastReportedSignature] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [autoScheduleLoading, setAutoScheduleLoading] = useState(false);
+  const [autoScheduleResult, setAutoScheduleResult] = useState(null);
 
   // Create Worker Form
   const [workerForm, setWorkerForm] = useState({
@@ -205,6 +207,27 @@ export default function AdminDashboard({ token, onLogout }) {
     }
   };
 
+  const handleAutoSchedule = async () => {
+    setAutoScheduleLoading(true);
+    setAutoScheduleResult(null);
+    setError("");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/tasks/auto-schedule",
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setAutoScheduleResult(response.data);
+      fetchDashboardData();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to auto-schedule issues");
+    } finally {
+      setAutoScheduleLoading(false);
+    }
+  };
+
   const workers = users.filter((u) => u.role === "worker");
   const regularUsers = users.filter((u) => u.role === "user");
   const reportedIssues = issues.filter((i) => i.status === "Reported");
@@ -278,6 +301,12 @@ export default function AdminDashboard({ token, onLogout }) {
           }}
         >
           ⚡ Priority List
+        </button>
+        <button
+          className={`nav-btn ${activeSection === "auto-schedule" ? "active" : ""}`}
+          onClick={() => setActiveSection("auto-schedule")}
+        >
+          🤖 Auto Schedule
         </button>
         <div style={{ marginTop: "auto", padding: "20px 15px", borderTop: "1px solid rgba(59, 130, 246, 0.1)" }}>
           <button
@@ -670,6 +699,87 @@ export default function AdminDashboard({ token, onLogout }) {
 
               {!priorityLoading && priorityList.length === 0 && (
                 <p style={{ color: "#94a3b8" }}>No priority list generated yet.</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Auto Schedule */}
+        {activeSection === "auto-schedule" && (
+          <div className="section">
+            <h2>🤖 Auto-Schedule Issues</h2>
+            <div className="component-section">
+              <button
+                onClick={handleAutoSchedule}
+                disabled={autoScheduleLoading}
+                style={{
+                  padding: "12px 24px",
+                  background: autoScheduleLoading ? "#64748b" : "#10b981",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: autoScheduleLoading ? "not-allowed" : "pointer",
+                  fontWeight: "700",
+                  fontSize: "1rem",
+                  marginBottom: "20px",
+                  transition: "all 0.3s ease"
+                }}
+              >
+                {autoScheduleLoading ? "🔄 Scheduling in progress..." : "▶ Start Auto-Scheduling"}
+              </button>
+
+              {autoScheduleResult && (
+                <div style={{
+                  background: autoScheduleResult.scheduledCount > 0 ? "rgba(34, 197, 94, 0.1)" : "rgba(148, 163, 184, 0.1)",
+                  border: `1px solid ${autoScheduleResult.scheduledCount > 0 ? "rgba(34, 197, 94, 0.3)" : "rgba(148, 163, 184, 0.3)"}`,
+                  borderRadius: "8px",
+                  padding: "16px",
+                  marginBottom: "20px"
+                }}>
+                  <h4 style={{ marginTop: 0, marginBottom: "12px", color: autoScheduleResult.scheduledCount > 0 ? "#22c55e" : "#94a3b8" }}>
+                    ✓ Scheduling Complete
+                  </h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "12px" }}>
+                    <div style={{ background: "rgba(59, 130, 246, 0.1)", padding: "12px", borderRadius: "6px" }}>
+                      <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Scheduled</p>
+                      <p style={{ margin: 0, color: "#3b82f6", fontSize: "1.5rem", fontWeight: "700" }}>{autoScheduleResult.scheduledCount}</p>
+                    </div>
+                    <div style={{ background: "rgba(148, 163, 184, 0.1)", padding: "12px", borderRadius: "6px" }}>
+                      <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Total Issues</p>
+                      <p style={{ margin: 0, color: "#cbd5e1", fontSize: "1.5rem", fontWeight: "700" }}>{autoScheduleResult.totalUnassigned}</p>
+                    </div>
+                    <div style={{ background: "rgba(245, 158, 11, 0.1)", padding: "12px", borderRadius: "6px" }}>
+                      <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Workers</p>
+                      <p style={{ margin: 0, color: "#f59e0b", fontSize: "1.5rem", fontWeight: "700" }}>{autoScheduleResult.availableWorkers}</p>
+                    </div>
+                  </div>
+                  <p style={{ color: "#cbd5e1", margin: 0, fontSize: "0.9rem" }}>
+                    {autoScheduleResult.message}
+                  </p>
+                </div>
+              )}
+
+              {autoScheduleResult && autoScheduleResult.details && autoScheduleResult.details.length > 0 && (
+                <div>
+                  <h4 style={{ color: "#cbd5e1", marginBottom: "12px" }}>📋 Scheduled Tasks</h4>
+                  <div className="tasks-list">
+                    {autoScheduleResult.details.map((detail, index) => (
+                      <div key={detail.taskId} className="task-card" style={{ opacity: 0.95 }}>
+                        <h4>#{index + 1} {detail.category}</h4>
+                        <p>Location: {detail.location}</p>
+                        <p>Assigned to: <strong>{detail.workerName}</strong></p>
+                        <p>Priority Score: <strong style={{ color: "#f59e0b" }}>{detail.priorityScore}/100</strong></p>
+                        <p style={{ fontSize: "0.85rem", color: "#94a3b8", marginBottom: 0 }}>Task ID: {detail.taskId}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!autoScheduleLoading && !autoScheduleResult && (
+                <p style={{ color: "#94a3b8", textAlign: "center", padding: "20px" }}>
+                  Click the button above to start auto-scheduling unassigned issues.
+                </p>
               )}
             </div>
           </div>
