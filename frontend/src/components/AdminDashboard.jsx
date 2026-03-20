@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
@@ -18,6 +20,15 @@ export default function AdminDashboard({ token, onLogout }) {
   const [error, setError] = useState("");
   const [autoScheduleLoading, setAutoScheduleLoading] = useState(false);
   const [autoScheduleResult, setAutoScheduleResult] = useState(null);
+  const [reportDuration, setReportDuration] = useState("week");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportData, setReportData] = useState(null);
+  const [selectedPriorityIssue, setSelectedPriorityIssue] = useState(null);
+  const [priorityAssignForm, setPriorityAssignForm] = useState({
+    issueId: "",
+    workerId: "",
+    dueDate: "",
+  });
 
   // Create Worker Form
   const [workerForm, setWorkerForm] = useState({
@@ -225,6 +236,116 @@ export default function AdminDashboard({ token, onLogout }) {
       setError(err.response?.data?.message || "Failed to auto-schedule issues");
     } finally {
       setAutoScheduleLoading(false);
+    }
+  };
+
+  const handleFetchReportSummary = async (duration = reportDuration) => {
+    setReportLoading(true);
+    setError("");
+
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/tasks/report-summary?duration=${duration}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setReportData(res.data);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to generate report summary");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  const handleDownloadReportPdf = () => {
+    if (!reportData) {
+      return;
+    }
+
+    const doc = new jsPDF();
+    const startDate = new Date(reportData.period.startDate).toLocaleDateString();
+    const endDate = new Date(reportData.period.endDate).toLocaleDateString();
+    const generatedAt = new Date(reportData.generatedAt).toLocaleString();
+
+    doc.setFontSize(18);
+    doc.text("Smart Infra Work Report", 14, 18);
+
+    doc.setFontSize(11);
+    doc.text(`Duration: ${reportData.duration === "month" ? "Last 30 Days" : "Last 7 Days"}`, 14, 28);
+    doc.text(`Period: ${startDate} to ${endDate}`, 14, 34);
+    doc.text(`Generated On: ${generatedAt}`, 14, 40);
+
+    autoTable(doc, {
+      startY: 48,
+      head: [["Metric", "Value"]],
+      body: [
+        ["Assigned Tasks", reportData.totals.assigned],
+        ["Completed Tasks", reportData.totals.completed],
+        ["In Progress Tasks", reportData.totals.inProgress],
+        ["Scheduled/Pending Tasks", reportData.totals.scheduled],
+        ["Rejected Tasks", reportData.totals.rejected],
+        ["Completion Rate", `${reportData.totals.completionRate}%`],
+      ],
+      theme: "striped",
+      styles: { fontSize: 10 },
+    });
+
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 10,
+      head: [["Worker", "Worker ID", "Assigned", "Completed", "In Progress", "Scheduled", "Rejected"]],
+      body: reportData.workers.map((worker) => [
+        worker.workerName,
+        worker.workerCode,
+        worker.assigned,
+        worker.completed,
+        worker.inProgress,
+        worker.scheduled,
+        worker.rejected,
+      ]),
+      theme: "grid",
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [41, 98, 255] },
+    });
+
+    doc.save(`smart-infra-${reportData.duration}-report.pdf`);
+  };
+
+  const handlePriorityCardTap = (issue) => {
+    setSelectedPriorityIssue(issue);
+    setPriorityAssignForm((prev) => ({
+      ...prev,
+      issueId: issue._id,
+    }));
+  };
+
+  const handleAssignFromPriority = async (e) => {
+    e.preventDefault();
+
+    if (!priorityAssignForm.issueId || !priorityAssignForm.workerId || !priorityAssignForm.dueDate) {
+      setError("Select a priority task, worker, and due date before assigning");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/tasks/assign",
+        priorityAssignForm,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      alert("Priority task assigned successfully!");
+      setPriorityAssignForm({ issueId: "", workerId: "", dueDate: "" });
+      setSelectedPriorityIssue(null);
+      await fetchDashboardData();
+      await handleGeneratePriorityList(true);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to assign priority task");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -507,6 +628,69 @@ export default function AdminDashboard({ token, onLogout }) {
                 </div>
               </div>
             )}
+
+            <div className="component-section" style={{ marginTop: "16px" }}>
+              <h3>📄 Predefined Work Report</h3>
+              <p style={{ color: "#cbd5e1", marginBottom: "10px", fontSize: "0.85rem" }}>
+                Generate a fixed-format report for last week or last month. Only numbers change.
+              </p>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+                <select
+                  value={reportDuration}
+                  onChange={(e) => setReportDuration(e.target.value)}
+                  style={{
+                    padding: "8px 10px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(59,130,246,0.4)",
+                    background: "rgba(15,23,42,0.7)",
+                    color: "#fff",
+                  }}
+                >
+                  <option value="week">Last 7 Days</option>
+                  <option value="month">Last 30 Days</option>
+                </select>
+                <button
+                  onClick={() => handleFetchReportSummary(reportDuration)}
+                  disabled={reportLoading}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#2563eb",
+                    color: "#fff",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                  }}
+                >
+                  {reportLoading ? "Generating..." : "Generate Report"}
+                </button>
+                <button
+                  onClick={handleDownloadReportPdf}
+                  disabled={!reportData || reportLoading}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: reportData ? "#16a34a" : "#475569",
+                    color: "#fff",
+                    fontWeight: "700",
+                    cursor: reportData ? "pointer" : "not-allowed",
+                  }}
+                >
+                  Download PDF
+                </button>
+              </div>
+              {reportData && (
+                <div style={{ marginTop: "10px", color: "#cbd5e1", fontSize: "0.85rem" }}>
+                  <p>Total Assigned: <strong>{reportData.totals.assigned}</strong></p>
+                  <p>Completed: <strong>{reportData.totals.completed}</strong></p>
+                  <p>In Progress: <strong>{reportData.totals.inProgress}</strong></p>
+                  <p>Scheduled/Pending: <strong>{reportData.totals.scheduled}</strong></p>
+                  <p>Rejected: <strong>{reportData.totals.rejected}</strong></p>
+                  <p>Completion Rate: <strong>{reportData.totals.completionRate}%</strong></p>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -683,15 +867,58 @@ export default function AdminDashboard({ token, onLogout }) {
                 </p>
               )}
 
+              <form onSubmit={handleAssignFromPriority} className="form" style={{ marginBottom: "14px" }}>
+                <h3>Assign Selected Priority Task</h3>
+                <input
+                  type="text"
+                  value={selectedPriorityIssue ? `${selectedPriorityIssue.category} - ${selectedPriorityIssue.location}` : "Tap a task below to select"}
+                  readOnly
+                />
+                <select
+                  value={priorityAssignForm.workerId}
+                  onChange={(e) => setPriorityAssignForm({ ...priorityAssignForm, workerId: e.target.value })}
+                  required
+                >
+                  <option value="">Select Worker</option>
+                  {workers.map((worker) => (
+                    <option key={worker._id} value={worker._id}>
+                      {worker.name} ({worker.workerId})
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="date"
+                  value={priorityAssignForm.dueDate}
+                  onChange={(e) => setPriorityAssignForm({ ...priorityAssignForm, dueDate: e.target.value })}
+                  required
+                />
+                <button type="submit" disabled={loading || !priorityAssignForm.issueId}>
+                  {loading ? "Assigning..." : "Assign Selected Task"}
+                </button>
+              </form>
+
               {priorityList.length > 0 && (
                 <div className="tasks-list">
                   {priorityList.map((issue, index) => (
-                    <div key={`${issue.category}-${issue.location}`} className="task-card">
+                    <div
+                      key={issue._id || `${issue.category}-${issue.location}`}
+                      className={`task-card priority-task-card ${priorityAssignForm.issueId === issue._id ? "selected" : ""}`}
+                      onClick={() => handlePriorityCardTap(issue)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handlePriorityCardTap(issue);
+                        }
+                      }}
+                    >
                       <h4>#{index + 1} {issue.category}</h4>
                       <p>Location: {issue.location}</p>
                       <p>Priority Score: <strong>{issue.priorityScore}</strong></p>
                       <p>Repeat Complaints: <strong>{issue.repeatComplaintCount || 1}</strong></p>
                       <p>Status: <span className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}>{issue.status}</span></p>
+                      <p style={{ color: "#60a5fa", fontWeight: "700", marginTop: "8px" }}>Tap to assign this task</p>
                     </div>
                   ))}
                 </div>
