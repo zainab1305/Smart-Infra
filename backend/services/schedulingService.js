@@ -2,6 +2,61 @@ const Issue = require("../models/Issue");
 const Task = require("../models/Task");
 const User = require("../models/User");
 
+const normalizeLocation = (value = "") => value.replace(/\s+/g, " ").trim();
+
+const tokenizeLocation = (value = "") =>
+  normalizeLocation(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+const isSimilarArea = (locationA = "", locationB = "") => {
+  const normalizedA = normalizeLocation(locationA).toLowerCase();
+  const normalizedB = normalizeLocation(locationB).toLowerCase();
+
+  if (!normalizedA || !normalizedB) return false;
+  if (normalizedA === normalizedB) return true;
+  if (normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)) return true;
+
+  const tokensA = tokenizeLocation(normalizedA);
+  const tokensB = tokenizeLocation(normalizedB);
+  if (!tokensA.length || !tokensB.length) return false;
+
+  const setA = new Set(tokensA);
+  const setB = new Set(tokensB);
+  const intersection = [...setA].filter((token) => setB.has(token)).length;
+  const union = new Set([...setA, ...setB]).size;
+  const jaccard = union > 0 ? intersection / union : 0;
+
+  return jaccard >= 0.6;
+};
+
+const groupIssuesByArea = (issues = []) => {
+  const groupedIssues = [];
+
+  issues.forEach((issue) => {
+    const existingGroup = groupedIssues.find(
+      (group) =>
+        group.category === issue.category &&
+        isSimilarArea(group.representative.location, issue.location)
+    );
+
+    if (existingGroup) {
+      existingGroup.issues.push(issue);
+      return;
+    }
+
+    groupedIssues.push({
+      category: issue.category,
+      representative: issue,
+      issues: [issue],
+    });
+  });
+
+  return groupedIssues;
+};
+
 // Get current week number
 const getCurrentWeek = () => {
   const now = new Date();
@@ -52,11 +107,16 @@ const autoScheduleIssues = async ({ limit } = {}) => {
       };
     }
 
+    const groupedReportedIssues = groupIssuesByArea(reportedIssues);
     const parsedLimit = Number.isInteger(limit) && limit > 0 ? limit : null;
-    const unassignedIssues = parsedLimit ? reportedIssues.slice(0, parsedLimit) : reportedIssues;
+    const unassignedGroups = parsedLimit
+      ? groupedReportedIssues.slice(0, parsedLimit)
+      : groupedReportedIssues;
+
     console.log(`[Scheduler] Total unassigned issues: ${reportedIssues.length}`);
+    console.log(`[Scheduler] Unique issue groups by area: ${groupedReportedIssues.length}`);
     if (parsedLimit) {
-      console.log(`[Scheduler] Scheduling first ${unassignedIssues.length} issues by priority`);
+      console.log(`[Scheduler] Scheduling first ${unassignedGroups.length} issue groups by priority`);
     }
 
     // Step 2: Get all available workers
@@ -75,10 +135,14 @@ const autoScheduleIssues = async ({ limit } = {}) => {
         message: "No available workers found. Please create and activate workers first.",
         scheduled: 0,
         total: reportedIssues.length,
-        attempted: unassignedIssues.length,
+        attempted: unassignedGroups.length,
         workers: 0
       };
     }
+
+    const activeTasks = await Task.find({
+      status: { $in: ["Scheduled", "In Progress", "Pending"] }
+    }).populate("issueId", "category location");
 
     // Step 3: Count current tasks assigned to each worker for load balancing
     console.log("[Scheduler] Counting existing tasks...");
@@ -117,7 +181,21 @@ const autoScheduleIssues = async ({ limit } = {}) => {
     const scheduledTasks = [];
     const scheduledIssueIds = [];
 
-    for (const issue of unassignedIssues) {
+    for (const group of unassignedGroups) {
+      const issue = group.representative;
+      const hasActiveGroupTask = activeTasks.some((task) => {
+        if (!task.issueId) return false;
+        return (
+          task.issueId.category === group.category &&
+          isSimilarArea(task.issueId.location, issue.location)
+        );
+      });
+
+      if (hasActiveGroupTask) {
+        console.log(`[Scheduler] Skipping group ${group.category} at ${issue.location} because an active task already exists`);
+        continue;
+      }
+
       // Find worker with minimum tasks (load balancing)
       let selectedWorker = availableWorkers[0];
       let minTasks = workerTaskCounts[selectedWorker._id.toString()];
@@ -151,9 +229,16 @@ const autoScheduleIssues = async ({ limit } = {}) => {
       await task.save();
       console.log(`[Scheduler] Task created: ${task._id}`);
       
-      // Update issue status to "Scheduled"
-      await Issue.findByIdAndUpdate(issue._id, { status: "Scheduled" });
-      console.log(`[Scheduler] Issue status updated to Scheduled`);
+      // Update all related issues in this grouped location to "Scheduled".
+      const relatedIssueIds = group.issues.map((groupIssue) => groupIssue._id);
+      await Issue.updateMany(
+        {
+          _id: { $in: relatedIssueIds },
+          status: { $in: ["Reported"] },
+        },
+        { status: "Scheduled" }
+      );
+      console.log(`[Scheduler] ${relatedIssueIds.length} grouped issues updated to Scheduled`);
 
       // Increment worker task count for next assignment
       workerTaskCounts[selectedWorker._id.toString()]++;
@@ -165,7 +250,8 @@ const autoScheduleIssues = async ({ limit } = {}) => {
         workerName: selectedWorker.name,
         category: issue.category,
         location: issue.location,
-        priorityScore: issue.priorityScore
+        priorityScore: issue.priorityScore,
+        groupedIssueCount: group.issues.length
       });
 
       scheduledIssueIds.push(issue._id);
@@ -175,11 +261,11 @@ const autoScheduleIssues = async ({ limit } = {}) => {
     return {
       success: true,
       message: parsedLimit
-        ? `Successfully scheduled ${scheduledTasks.length} of ${unassignedIssues.length} selected issues`
-        : `Successfully scheduled ${scheduledTasks.length} issues`,
+        ? `Successfully scheduled ${scheduledTasks.length} of ${unassignedGroups.length} selected issue groups`
+        : `Successfully scheduled ${scheduledTasks.length} issue groups`,
       scheduled: scheduledTasks.length,
       total: reportedIssues.length,
-      attempted: unassignedIssues.length,
+      attempted: unassignedGroups.length,
       requestedLimit: parsedLimit,
       workers: availableWorkers.length,
       details: scheduledTasks

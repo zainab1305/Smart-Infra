@@ -7,6 +7,94 @@ const { autoScheduleIssues } = require("../services/schedulingService");
 
 const router = express.Router();
 
+const normalizeLocation = (value = "") => value.replace(/\s+/g, " ").trim();
+
+const tokenizeLocation = (value = "") =>
+  normalizeLocation(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+const isSimilarArea = (locationA = "", locationB = "") => {
+  const normalizedA = normalizeLocation(locationA).toLowerCase();
+  const normalizedB = normalizeLocation(locationB).toLowerCase();
+
+  if (!normalizedA || !normalizedB) return false;
+  if (normalizedA === normalizedB) return true;
+
+  if (normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)) {
+    return true;
+  }
+
+  const tokensA = tokenizeLocation(normalizedA);
+  const tokensB = tokenizeLocation(normalizedB);
+  if (!tokensA.length || !tokensB.length) return false;
+
+  const setA = new Set(tokensA);
+  const setB = new Set(tokensB);
+  const intersection = [...setA].filter((token) => setB.has(token)).length;
+  const union = new Set([...setA, ...setB]).size;
+  const jaccard = union > 0 ? intersection / union : 0;
+
+  return jaccard >= 0.6;
+};
+
+const getRelatedIssueIds = async (baseIssue) => {
+  const sameCategoryIssues = await Issue.find({ category: baseIssue.category }).select("_id location");
+
+  return sameCategoryIssues
+    .filter((issue) => isSimilarArea(issue.location, baseIssue.location))
+    .map((issue) => issue._id);
+};
+
+const syncRelatedIssueStatuses = async ({ baseIssue, nextStatus, fromStatuses }) => {
+  const relatedIssueIds = await getRelatedIssueIds(baseIssue);
+
+  if (!relatedIssueIds.length) {
+    return 0;
+  }
+
+  const updateResult = await Issue.updateMany(
+    {
+      _id: { $in: relatedIssueIds },
+      status: { $in: fromStatuses },
+    },
+    { status: nextStatus }
+  );
+
+  return updateResult.modifiedCount || 0;
+};
+
+const groupActiveTasksByArea = (tasks = []) => {
+  const grouped = [];
+
+  tasks.forEach((task) => {
+    if (!task.issueId?.category || !task.issueId?.location) {
+      return;
+    }
+
+    const existingGroup = grouped.find(
+      (group) =>
+        group.category === task.issueId.category &&
+        isSimilarArea(group.representativeLocation, task.issueId.location)
+    );
+
+    if (existingGroup) {
+      existingGroup.tasks.push(task);
+      return;
+    }
+
+    grouped.push({
+      category: task.issueId.category,
+      representativeLocation: task.issueId.location,
+      tasks: [task],
+    });
+  });
+
+  return grouped;
+};
+
 // Get current week number
 const getCurrentWeek = () => {
   const now = new Date();
@@ -46,6 +134,19 @@ router.post("/assign", authMiddleware, adminOnly, async (req, res) => {
       return res.status(400).json({ message: "Only reported issues can be scheduled" });
     }
 
+    const relatedIssueIds = await getRelatedIssueIds(issue);
+    const existingActiveTask = await Task.findOne({
+      issueId: { $in: relatedIssueIds },
+      status: { $in: ["Scheduled", "In Progress", "Pending"] },
+    }).select("_id issueId status");
+
+    if (existingActiveTask) {
+      return res.status(400).json({
+        message: "A task is already active for this location group",
+        existingTaskId: existingActiveTask._id,
+      });
+    }
+
     const weekNumber = getCurrentWeek();
     const year = new Date().getFullYear();
 
@@ -61,12 +162,20 @@ router.post("/assign", authMiddleware, adminOnly, async (req, res) => {
 
     await task.save();
 
-    // Update issue status
-    await Issue.findByIdAndUpdate(issueId, { status: "Scheduled" });
+    // Keep grouped complaints in sync so all reporting users see the same status.
+    const syncedIssues = await syncRelatedIssueStatuses({
+      baseIssue: issue,
+      nextStatus: "Scheduled",
+      fromStatuses: ["Reported"],
+    });
 
     res.status(201).json({
-      message: "Task assigned successfully",
+      message:
+        syncedIssues > 1
+          ? `Task assigned successfully. Synced ${syncedIssues} related issues to Scheduled.`
+          : "Task assigned successfully",
       task: await task.populate(["issueId", "workerId"]),
+      syncedIssues,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -122,16 +231,24 @@ router.put("/:taskId/respond", authMiddleware, workerOrAdmin, async (req, res) =
       { new: true }
     );
 
-    // Keep rejected tasks in lifecycle history.
-    if (!accepted) {
-      await Issue.findByIdAndUpdate(task.issueId, { status: "Rejected" });
-    } else {
-      await Issue.findByIdAndUpdate(task.issueId, { status: "In Progress" });
+    const taskIssue = await Issue.findById(task.issueId);
+    if (!taskIssue) {
+      return res.status(404).json({ message: "Issue not found for this task" });
     }
+
+    // Keep grouped complaints in sync so all reporting users see consistent progress.
+    const syncedIssues = await syncRelatedIssueStatuses({
+      baseIssue: taskIssue,
+      nextStatus: accepted ? "In Progress" : "Rejected",
+      fromStatuses: accepted
+        ? ["Reported", "Scheduled", "Pending"]
+        : ["Reported", "Scheduled", "Pending", "In Progress"],
+    });
 
     res.json({
       message: "Task response recorded",
       task: await updatedTask.populate(["issueId", "workerId"]),
+      syncedIssues,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -161,12 +278,22 @@ router.put("/:taskId/complete", authMiddleware, workerOrAdmin, async (req, res) 
       { new: true }
     );
 
-    // Update issue status
-    await Issue.findByIdAndUpdate(task.issueId, { status: "Completed" });
+    const taskIssue = await Issue.findById(task.issueId);
+    if (!taskIssue) {
+      return res.status(404).json({ message: "Issue not found for this task" });
+    }
+
+    // Keep grouped complaints in sync so all reporting users see closure.
+    const syncedIssues = await syncRelatedIssueStatuses({
+      baseIssue: taskIssue,
+      nextStatus: "Completed",
+      fromStatuses: ["In Progress", "Scheduled", "Pending"],
+    });
 
     res.json({
       message: "Task completed",
       task: await updatedTask.populate(["issueId", "workerId"]),
+      syncedIssues,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -351,6 +478,84 @@ router.get("/report-summary", authMiddleware, adminOnly, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Admin: One-time cleanup for legacy duplicate active tasks in similar-location groups.
+router.post("/cleanup-duplicate-active-tasks", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const activeTasks = await Task.find({
+      status: { $in: ["Scheduled", "In Progress", "Pending"] },
+    })
+      .populate("issueId", "category location")
+      .populate("workerId", "name");
+
+    const groupedTasks = groupActiveTasksByArea(activeTasks);
+    const duplicateTaskIds = [];
+    const cleanupSummary = [];
+    let issueStatusesSynced = 0;
+
+    groupedTasks.forEach((group) => {
+      if (group.tasks.length <= 1) {
+        return;
+      }
+
+      const sortedTasks = [...group.tasks].sort(
+        (a, b) => new Date(a.assignedDate || a.createdAt) - new Date(b.assignedDate || b.createdAt)
+      );
+
+      const keepTask = sortedTasks[0];
+      const duplicateTasks = sortedTasks.slice(1);
+      duplicateTasks.forEach((task) => duplicateTaskIds.push(task._id));
+
+      cleanupSummary.push({
+        category: group.category,
+        location: group.representativeLocation,
+        keptTaskId: keepTask._id,
+        removedTaskIds: duplicateTasks.map((task) => task._id),
+      });
+    });
+
+    if (duplicateTaskIds.length > 0) {
+      await Task.updateMany(
+        { _id: { $in: duplicateTaskIds } },
+        {
+          status: "Rejected",
+          workerResponse: {
+            accepted: false,
+            feedback: "Duplicate task cleaned up automatically (same location group)",
+            responseDate: new Date(),
+          },
+        }
+      );
+    }
+
+    for (const summary of cleanupSummary) {
+      const keepTask = activeTasks.find((task) => task._id.toString() === summary.keptTaskId.toString());
+      if (!keepTask?.issueId) {
+        continue;
+      }
+
+      const targetStatus = keepTask.status === "In Progress" ? "In Progress" : "Scheduled";
+      issueStatusesSynced += await syncRelatedIssueStatuses({
+        baseIssue: keepTask.issueId,
+        nextStatus: targetStatus,
+        fromStatuses: ["Reported", "Scheduled", "Pending", "In Progress"],
+      });
+    }
+
+    return res.json({
+      message:
+        duplicateTaskIds.length > 0
+          ? `Cleanup complete. ${duplicateTaskIds.length} duplicate active tasks were auto-rejected.`
+          : "No duplicate active tasks found.",
+      groupsChecked: groupedTasks.length,
+      duplicateTasksRemoved: duplicateTaskIds.length,
+      issueStatusesSynced,
+      details: cleanupSummary,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 });
 
