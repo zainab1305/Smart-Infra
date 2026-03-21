@@ -20,9 +20,11 @@ const getCurrentWeek = () => {
  * 3. Get all available workers (role = "worker", isActive = true)
  * 4. Distribute tasks using round-robin to balance workload
  * 
+ * @param {Object} options
+ * @param {number | undefined} options.limit - Maximum number of issues to schedule
  * @returns {Object} Scheduling result with statistics
  */
-const autoScheduleIssues = async () => {
+const autoScheduleIssues = async ({ limit } = {}) => {
   try {
     console.log("[Scheduler] Starting auto-schedule process...");
     
@@ -50,8 +52,12 @@ const autoScheduleIssues = async () => {
       };
     }
 
-    const unassignedIssues = reportedIssues;
-    console.log(`[Scheduler] Total unassigned issues: ${unassignedIssues.length}`);
+    const parsedLimit = Number.isInteger(limit) && limit > 0 ? limit : null;
+    const unassignedIssues = parsedLimit ? reportedIssues.slice(0, parsedLimit) : reportedIssues;
+    console.log(`[Scheduler] Total unassigned issues: ${reportedIssues.length}`);
+    if (parsedLimit) {
+      console.log(`[Scheduler] Scheduling first ${unassignedIssues.length} issues by priority`);
+    }
 
     // Step 2: Get all available workers
     console.log("[Scheduler] Fetching available workers...");
@@ -68,7 +74,8 @@ const autoScheduleIssues = async () => {
         success: false,
         message: "No available workers found. Please create and activate workers first.",
         scheduled: 0,
-        total: unassignedIssues.length,
+        total: reportedIssues.length,
+        attempted: unassignedIssues.length,
         workers: 0
       };
     }
@@ -167,9 +174,13 @@ const autoScheduleIssues = async () => {
     console.log(`[Scheduler] Successfully scheduled ${scheduledTasks.length} tasks`);
     return {
       success: true,
-      message: `Successfully scheduled ${scheduledTasks.length} issues`,
+      message: parsedLimit
+        ? `Successfully scheduled ${scheduledTasks.length} of ${unassignedIssues.length} selected issues`
+        : `Successfully scheduled ${scheduledTasks.length} issues`,
       scheduled: scheduledTasks.length,
-      total: unassignedIssues.length,
+      total: reportedIssues.length,
+      attempted: unassignedIssues.length,
+      requestedLimit: parsedLimit,
       workers: availableWorkers.length,
       details: scheduledTasks
     };

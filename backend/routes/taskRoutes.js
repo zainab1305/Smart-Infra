@@ -358,7 +358,19 @@ router.get("/report-summary", authMiddleware, adminOnly, async (req, res) => {
 router.post("/auto-schedule", authMiddleware, adminOnly, async (req, res) => {
   console.log("[AUTO-SCHEDULE] Request received from user:", req.user?.id);
   try {
-    const result = await autoScheduleIssues();
+    const rawLimit = req.body?.limit;
+    let parsedLimit;
+
+    if (rawLimit !== undefined && rawLimit !== null && rawLimit !== "") {
+      parsedLimit = Number(rawLimit);
+      if (!Number.isInteger(parsedLimit) || parsedLimit <= 0) {
+        return res.status(400).json({
+          message: "limit must be a positive whole number",
+        });
+      }
+    }
+
+    const result = await autoScheduleIssues({ limit: parsedLimit });
     console.log("[AUTO-SCHEDULE] Result:", result);
     
     if (result.success) {
@@ -366,6 +378,8 @@ router.post("/auto-schedule", authMiddleware, adminOnly, async (req, res) => {
         message: result.message,
         scheduledCount: result.scheduled,
         totalUnassigned: result.total,
+        attemptedCount: result.attempted,
+        requestedLimit: result.requestedLimit,
         availableWorkers: result.workers,
         details: result.details
       });
