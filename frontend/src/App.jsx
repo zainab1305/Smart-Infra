@@ -41,7 +41,7 @@ function App() {
 
   // Other dashboards use the standard wrapper layout
   return (
-    <div className="app">
+    <div className={`app ${user?.role === "worker" || user?.role === "user" ? "with-sidebar" : ""}`}>
       <header className="dashboard-header">
         <h1>Smart Infrastructure Management</h1>
         <div className="header-actions">
