@@ -239,7 +239,7 @@ body {
   border-bottom: 1px solid var(--border-color);
   padding: 8px 12px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
@@ -747,7 +747,7 @@ body {
   box-shadow: none;
   backdrop-filter: none;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 8px;
 }
 
@@ -807,6 +807,8 @@ body {
   margin-bottom: 5px;
   font-size: 0.85rem;
   font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* Prevent light-theme leakage from other component styles. */
@@ -1038,6 +1040,34 @@ body {
   margin-bottom: 8px;
 }
 
+.worker-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+  border-top: 1px solid rgba(59, 130, 246, 0.2);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+  padding: 10px 0;
+}
+
+.worker-task-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.worker-task-card {
+  min-height: 126px;
+}
+
+.worker-section-subtitle,
+.worker-empty-text {
+  color: #94a3b8;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
 /* ============================================================================
    ERROR MESSAGE
    ============================================================================ */
@@ -1186,8 +1216,8 @@ body {
    ============================================================================ */
 
 .task-detail {
-  background: rgba(20, 20, 20, 0.4);
-  border: 1px solid rgba(232, 165, 71, 0.2);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 16px;
   margin-top: 12px;
@@ -1227,8 +1257,8 @@ body {
 }
 
 .response-form {
-  background: rgba(232, 165, 71, 0.08);
-  border: 1px solid rgba(232, 165, 71, 0.2);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 14px;
   margin-top: 14px;
@@ -1334,6 +1364,14 @@ body {
 @media (max-width: 1024px) {
   .charts-container {
     grid-template-columns: 1fr;
+  }
+
+  .worker-task-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .worker-summary-grid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
   }
 }
 

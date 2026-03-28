@@ -25,6 +25,7 @@ export default function AdminDashboard({ token, onLogout }) {
   const [error, setError] = useState("");
   const [autoScheduleLoading, setAutoScheduleLoading] = useState(false);
   const [autoScheduleResult, setAutoScheduleResult] = useState(null);
+  const [autoScheduleLimit, setAutoScheduleLimit] = useState("");
   const [reportDuration, setReportDuration] = useState("week");
   const [reportLoading, setReportLoading] = useState(false);
   const [reportData, setReportData] = useState(null);
@@ -242,9 +243,20 @@ export default function AdminDashboard({ token, onLogout }) {
     setError("");
 
     try {
+      let payload = {};
+      if (autoScheduleLimit !== "") {
+        const limit = Number(autoScheduleLimit);
+        if (!Number.isInteger(limit) || limit <= 0) {
+          setError("Please enter a valid positive whole number for task limit");
+          setAutoScheduleLoading(false);
+          return;
+        }
+        payload = { limit };
+      }
+
       const response = await axios.post(
         "http://localhost:5000/api/tasks/auto-schedule",
-        {},
+        payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -962,6 +974,29 @@ export default function AdminDashboard({ token, onLogout }) {
           <div className="section">
             <h2>🤖 Auto-Schedule Issues</h2>
             <div className="component-section">
+              <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "12px", flexWrap: "wrap" }}>
+                <label htmlFor="auto-schedule-limit" style={{ color: "#cbd5e1", fontWeight: 600 }}>
+                  Tasks to schedule:
+                </label>
+                <input
+                  id="auto-schedule-limit"
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={autoScheduleLimit}
+                  onChange={(e) => setAutoScheduleLimit(e.target.value)}
+                  placeholder="Leave empty for all"
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(148, 163, 184, 0.4)",
+                    background: "rgba(15, 23, 42, 0.6)",
+                    color: "#e2e8f0",
+                    minWidth: "220px"
+                  }}
+                />
+              </div>
+
               <button
                 onClick={handleAutoSchedule}
                 disabled={autoScheduleLoading}
@@ -1000,6 +1035,10 @@ export default function AdminDashboard({ token, onLogout }) {
                     <div style={{ background: "rgba(148, 163, 184, 0.1)", padding: "12px", borderRadius: "6px" }}>
                       <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Total Issues</p>
                       <p style={{ margin: 0, color: "#cbd5e1", fontSize: "1.5rem", fontWeight: "700" }}>{autoScheduleResult.totalUnassigned}</p>
+                    </div>
+                    <div style={{ background: "rgba(56, 189, 248, 0.1)", padding: "12px", borderRadius: "6px" }}>
+                      <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Attempted</p>
+                      <p style={{ margin: 0, color: "#38bdf8", fontSize: "1.5rem", fontWeight: "700" }}>{autoScheduleResult.attemptedCount ?? autoScheduleResult.totalUnassigned}</p>
                     </div>
                     <div style={{ background: "rgba(245, 158, 11, 0.1)", padding: "12px", borderRadius: "6px" }}>
                       <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Workers</p>

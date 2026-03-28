@@ -32,8 +32,20 @@ body {
   background: linear-gradient(135deg, #0f172a 0%, #1a2847 50%, #0f172a 100%);
 }
 
+.app.with-sidebar > .dashboard-header {
+  margin-left: 200px;
+  width: calc(100% - 200px);
+}
+
 main {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .app.with-sidebar > .dashboard-header {
+    margin-left: 0;
+    width: 100%;
+  }
 }

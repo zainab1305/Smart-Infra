@@ -95,6 +95,7 @@ export default function WorkerDashboard({ token }) {
   const inProgressTasks = myTasks.filter((t) => t.status === "In Progress");
   const completedTasks = myTasks.filter((t) => t.status === "Completed");
   const rejectedTasks = myTasks.filter((t) => t.status === "Rejected");
+  const totalAssigned = myTasks.length;
   const currentTasks = [...scheduledTasks, ...inProgressTasks];
   const historyTasks = [...completedTasks, ...rejectedTasks];
 
@@ -130,7 +131,11 @@ export default function WorkerDashboard({ token }) {
           <div className="section">
             <h2>My Assigned Tasks</h2>
 
-            <div className="stats-grid">
+            <div className="worker-summary-grid">
+              <div className="stat-card">
+                <h3>Assigned</h3>
+                <p className="stat-number">{totalAssigned}</p>
+              </div>
               <div className="stat-card">
                 <h3>Scheduled</h3>
                 <p className="stat-number">{scheduledTasks.length}</p>
@@ -206,15 +211,15 @@ export default function WorkerDashboard({ token }) {
                 )}
               </div>
             ) : (
-              <div className="tasks-list">
+              <div className="worker-task-columns">
                 <div className="task-section">
                   <h3>Current Tasks</h3>
-                  <p style={{ color: "#94a3b8", marginBottom: "8px", fontSize: "0.85rem" }}>
+                  <p className="worker-section-subtitle">
                     Scheduled and In Progress tasks requiring action
                   </p>
-                  {currentTasks.length === 0 && <p style={{ color: "#94a3b8" }}>No current tasks</p>}
+                  {currentTasks.length === 0 && <p className="worker-empty-text">No current tasks</p>}
                   {scheduledTasks.map((task) => (
-                    <div key={task._id} className="task-card">
+                    <div key={task._id} className="task-card worker-task-card">
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Priority: {task.issueId?.priorityScore}</p>
@@ -225,7 +230,7 @@ export default function WorkerDashboard({ token }) {
                     </div>
                   ))}
                   {inProgressTasks.map((task) => (
-                    <div key={task._id} className="task-card">
+                    <div key={task._id} className="task-card worker-task-card">
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Priority: {task.issueId?.priorityScore}</p>
@@ -239,12 +244,12 @@ export default function WorkerDashboard({ token }) {
 
                 <div className="task-section">
                   <h3>Task History</h3>
-                  <p style={{ color: "#94a3b8", marginBottom: "8px", fontSize: "0.85rem" }}>
+                  <p className="worker-section-subtitle">
                     Completed and Rejected tasks
                   </p>
-                  {historyTasks.length === 0 && <p style={{ color: "#94a3b8" }}>No task history yet</p>}
+                  {historyTasks.length === 0 && <p className="worker-empty-text">No task history yet</p>}
                   {completedTasks.map((task) => (
-                    <div key={task._id} className="task-card completed">
+                    <div key={task._id} className="task-card worker-task-card completed">
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Status: <span className={`status-badge status-${task.status.replace(/\s+/g, '')}`}>{task.status}</span></p>
@@ -252,7 +257,7 @@ export default function WorkerDashboard({ token }) {
                     </div>
                   ))}
                   {rejectedTasks.map((task) => (
-                    <div key={task._id} className="task-card">
+                    <div key={task._id} className="task-card worker-task-card">
                       <h4>{task.issueId?.category}</h4>
                       <p>{task.issueId?.location}</p>
                       <p>Status: <span className="status-badge status-Rejected">Rejected</span></p>
