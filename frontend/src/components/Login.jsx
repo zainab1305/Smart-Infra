@@ -1,14 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Login.css";
 
 // Background image path (ensure file is in public folder)
-const BG_IMAGE = "\ej-yao-D46mXLsQRJw-unsplash.jpg";
-
+// PUT YOUR IMAGE FILE NAME HERE - place the image file in the public/ folder
+// Background images for different themes
+const BG_DARK = "ej-yao-D46mXLsQRJw-unsplash.jpg";
+const BG_LIGHT = "/images/light2.jpg";
 export default function Login({ onLogin }) {
+  const [theme, setTheme] = useState("light");
   const [selectedRole, setSelectedRole] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Load theme from localStorage on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
 
   // Admin Login
   const [adminEmail, setAdminEmail] = useState("");
@@ -109,7 +126,7 @@ export default function Login({ onLogin }) {
 
   if (selectedRole) {
     return (
-      <div className="login-expanded-container" style={{ backgroundImage: `url('${BG_IMAGE}')` }}>
+      <div className="login-expanded-container" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
         <button 
           className="back-to-columns-btn"
           onClick={() => {
@@ -264,7 +281,11 @@ export default function Login({ onLogin }) {
 
   // Three Column View
   return (
-    <div className="login-columns-container" style={{ backgroundImage: `url('${BG_IMAGE}')` }}>
+    <div className="login-columns-container" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
+      <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
+      
       <div className="columns-header">
         <h1>Smart Infrastructure Dashboard</h1>
         <p>Select your role to login</p>

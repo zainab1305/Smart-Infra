@@ -5,7 +5,12 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
 
+// Background images for dark and light themes (place files in public/ folder)
+const BG_DARK = "/bg-dark.jpg";
+const BG_LIGHT = "/bg-light.jpg";
+
 export default function WorkerDashboard({ token }) {
+  const [theme, setTheme] = useState("dark");
   const [activeSection, setActiveSection] = useState("tasks");
   const [myTasks, setMyTasks] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,7 +20,19 @@ export default function WorkerDashboard({ token }) {
 
   useEffect(() => {
     fetchMyTasks();
+    
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
 
   const fetchMyTasks = async () => {
     setLoading(true);
@@ -82,7 +99,15 @@ export default function WorkerDashboard({ token }) {
   const historyTasks = [...completedTasks, ...rejectedTasks];
 
   return (
-    <div className="dashboard">
+    <div className="dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
+      <button 
+        className="theme-toggle-dashboard" 
+        onClick={toggleTheme} 
+        title="Toggle theme"
+        aria-label="Toggle dark/light theme"
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       <nav className="dashboard-nav">
         <button
           className={`nav-btn ${activeSection === "tasks" ? "active" : ""}`}
@@ -272,7 +297,7 @@ export default function WorkerDashboard({ token }) {
                       label={({ name, value }) => `${name}: ${value}%`}
                     >
                       <Cell fill="#22c55e" />
-                      <Cell fill="rgba(59, 130, 246, 0.2)" />
+                      <Cell fill="rgba(255, 153, 0, 0.2)" />
                     </Pie>
                     <Tooltip formatter={(value) => `${value}%`} />
                   </PieChart>
@@ -293,7 +318,7 @@ export default function WorkerDashboard({ token }) {
                       {
                         name: "In Progress",
                         value: inProgressTasks.length,
-                        fill: "#3b82f6",
+                        fill: "#FF9500",
                       },
                       {
                         name: "Scheduled",
@@ -311,17 +336,17 @@ export default function WorkerDashboard({ token }) {
                     <XAxis dataKey="name" stroke="#cbd5e1" style={{ fontSize: "0.75rem" }} />
                     <YAxis stroke="#cbd5e1" style={{ fontSize: "0.75rem" }} />
                     <Tooltip
-                      cursor={{ fill: "rgba(59, 130, 246, 0.1)" }}
+                      cursor={{ fill: "rgba(255, 153, 0, 0.1)" }}
                       contentStyle={{
                         backgroundColor: "rgba(15, 23, 42, 0.95)",
-                        border: "1px solid rgba(59, 130, 246, 0.3)",
+                        border: "1px solid rgba(255, 153, 0, 0.3)",
                         borderRadius: "6px",
                         color: "#e2e8f0",
                       }}
                     />
                     <Bar dataKey="value" fill="#8884d8" radius={6}>
                       <Cell fill="#22c55e" />
-                      <Cell fill="#3b82f6" />
+                      <Cell fill="#FF9500" />
                       <Cell fill="#f59e0b" />
                       <Cell fill="#ef4444" />
                     </Bar>

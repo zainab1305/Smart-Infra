@@ -29,7 +29,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 50%, #0f172a 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1a2847 50%, #0f172a 100%);
 }
 
 main {

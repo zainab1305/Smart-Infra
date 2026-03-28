@@ -7,7 +7,12 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from "recharts";
 
+// Background images for dark and light themes (place files in public/ folder)
+const BG_DARK = "/bg-dark.jpg";
+const BG_LIGHT = "/bg-light.jpg";
+
 export default function AdminDashboard({ token, onLogout }) {
+  const [theme, setTheme] = useState("dark");
   const [activeSection, setActiveSection] = useState("home");
   const [users, setUsers] = useState([]);
   const [issues, setIssues] = useState([]);
@@ -50,8 +55,21 @@ export default function AdminDashboard({ token, onLogout }) {
     fetchDashboardData();
     // Auto-refresh every 30 seconds
     const interval = setInterval(fetchDashboardData, 30000);
+    
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    
     return () => clearInterval(interval);
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
 
   useEffect(() => {
     if (!issues.length) {
@@ -384,10 +402,18 @@ export default function AdminDashboard({ token, onLogout }) {
   });
 
   return (
-    <div className="dashboard">
+    <div className="dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
+      <button 
+        className="theme-toggle-dashboard" 
+        onClick={toggleTheme} 
+        title="Toggle theme"
+        aria-label="Toggle dark/light theme"
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       {/* Sidebar Navigation */}
       <nav className="dashboard-nav">
-        <div style={{ padding: "20px 15px", borderBottom: "1px solid rgba(59, 130, 246, 0.1)" }}>
+        <div style={{ padding: "20px 15px", borderBottom: "1px solid rgba(255, 153, 0, 0.1)" }}>
           <h3 style={{ color: "#ffffff", fontSize: "1rem", fontWeight: "700", marginBottom: "20px" }}>Smart Infra</h3>
         </div>
         <button
@@ -429,7 +455,7 @@ export default function AdminDashboard({ token, onLogout }) {
         >
           🤖 Auto Schedule
         </button>
-        <div style={{ marginTop: "auto", padding: "20px 15px", borderTop: "1px solid rgba(59, 130, 246, 0.1)" }}>
+        <div style={{ marginTop: "auto", padding: "20px 15px", borderTop: "1px solid rgba(255, 153, 0, 0.1)" }}>
           <button
             onClick={onLogout}
             style={{
@@ -456,7 +482,7 @@ export default function AdminDashboard({ token, onLogout }) {
           <div className="user-info">
             <span>👤 Administrator</span>
           </div>
-          <button onClick={fetchDashboardData} disabled={loading} style={{ padding: "10px 16px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
+          <button onClick={fetchDashboardData} disabled={loading} style={{ padding: "10px 16px", background: "linear-gradient(135deg, #FF9500 0%, #FFCC66 100%)", color: "#ffffff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
             🔄 {loading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
@@ -505,13 +531,13 @@ export default function AdminDashboard({ token, onLogout }) {
                       isAnimationActive={true}
                       animationDuration={1200}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(59, 130, 246, 0.1)" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 153, 0, 0.1)" />
                       <XAxis dataKey="day" stroke="#94a3b8" />
                       <YAxis stroke="#94a3b8" />
                       <Tooltip 
                         contentStyle={{
                           background: "rgba(15, 23, 42, 0.9)",
-                          border: "1px solid rgba(59, 130, 246, 0.3)",
+                          border: "1px solid rgba(255, 153, 0, 0.3)",
                           borderRadius: "8px",
                           color: "#fff"
                         }}
@@ -529,10 +555,10 @@ export default function AdminDashboard({ token, onLogout }) {
                       <Line 
                         type="natural"
                         dataKey="Scheduled" 
-                        stroke="#3b82f6" 
+                        stroke="#FF9500" 
                         strokeWidth={2.5}
                         isAnimationActive={true}
-                        dot={{ fill: "#3b82f6", r: 3 }}
+                        dot={{ fill: "#FF9500", r: 3 }}
                         activeDot={{ r: 5 }}
                       />
                       <Line 
@@ -619,7 +645,7 @@ export default function AdminDashboard({ token, onLogout }) {
                       <div className="task-stats">
                         <span style={{ color: "#cbd5e1" }}>📋 Total Tasks: <strong style={{ color: "#f5f7fa" }}>{workerData.totalTasks}</strong></span>
                         <span style={{ color: "#22c55e" }}>✓ Completed: <strong>{workerData.completed}</strong></span>
-                        <span style={{ color: "#3b82f6" }}>⏳ In Progress: <strong>{workerData.inProgress}</strong></span>
+                        <span style={{ color: "#FF9500" }}>⏳ In Progress: <strong>{workerData.inProgress}</strong></span>
                         <span style={{ color: "#f59e0b" }}>⏸ Scheduled: <strong>{workerData.scheduled}</strong></span>
                         <span style={{ color: "#ef4444" }}>✗ Rejected: <strong>{workerData.rejected}</strong></span>
                       </div>
@@ -641,7 +667,7 @@ export default function AdminDashboard({ token, onLogout }) {
                   style={{
                     padding: "8px 10px",
                     borderRadius: "8px",
-                    border: "1px solid rgba(59,130,246,0.4)",
+                    border: "1px solid rgba(255, 153, 0, 0.4)",
                     background: "rgba(15,23,42,0.7)",
                     color: "#fff",
                   }}
@@ -849,8 +875,8 @@ export default function AdminDashboard({ token, onLogout }) {
                 disabled={priorityLoading}
                 style={{
                   padding: "10px 16px",
-                  background: "#3b82f6",
-                  color: "#fff",
+                  background: "linear-gradient(135deg, #FF9500 0%, #FFCC66 100%)",
+                  color: "#ffffff",
                   border: "none",
                   borderRadius: "8px",
                   cursor: "pointer",
@@ -918,7 +944,7 @@ export default function AdminDashboard({ token, onLogout }) {
                       <p>Priority Score: <strong>{issue.priorityScore}</strong></p>
                       <p>Repeat Complaints: <strong>{issue.repeatComplaintCount || 1}</strong></p>
                       <p>Status: <span className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}>{issue.status}</span></p>
-                      <p style={{ color: "#60a5fa", fontWeight: "700", marginTop: "8px" }}>Tap to assign this task</p>
+                      <p style={{ color: "#FFCC66", fontWeight: "700", marginTop: "8px" }}>Tap to assign this task</p>
                     </div>
                   ))}
                 </div>
@@ -941,7 +967,7 @@ export default function AdminDashboard({ token, onLogout }) {
                 disabled={autoScheduleLoading}
                 style={{
                   padding: "12px 24px",
-                  background: autoScheduleLoading ? "#64748b" : "#10b981",
+                  background: autoScheduleLoading ? "#64748b" : "#FF9500",
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",
@@ -967,9 +993,9 @@ export default function AdminDashboard({ token, onLogout }) {
                     ✓ Scheduling Complete
                   </h4>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "12px" }}>
-                    <div style={{ background: "rgba(59, 130, 246, 0.1)", padding: "12px", borderRadius: "6px" }}>
+                    <div style={{ background: "rgba(255, 153, 0, 0.1)", padding: "12px", borderRadius: "6px" }}>
                       <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Scheduled</p>
-                      <p style={{ margin: 0, color: "#3b82f6", fontSize: "1.5rem", fontWeight: "700" }}>{autoScheduleResult.scheduledCount}</p>
+                      <p style={{ margin: 0, color: "#FF9500", fontSize: "1.5rem", fontWeight: "700" }}>{autoScheduleResult.scheduledCount}</p>
                     </div>
                     <div style={{ background: "rgba(148, 163, 184, 0.1)", padding: "12px", borderRadius: "6px" }}>
                       <p style={{ margin: "0 0 4px 0", color: "#94a3b8", fontSize: "0.85rem" }}>Total Issues</p>

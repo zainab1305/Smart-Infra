@@ -1,11 +1,22 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Login from "./components/Login";
+import LandingPage from "./components/LandingPage";
 import AdminDashboard from "./components/AdminDashboard";
 import UserDashboard from "./components/UserDashboard";
 import WorkerDashboard from "./components/WorkerDashboard";
 
 function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+function AppContent() {
+  const navigate = useNavigate();
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null);
 
@@ -21,6 +32,7 @@ function App() {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    navigate("/login");
   };
 
   // Set default axios headers
@@ -30,16 +42,35 @@ function App() {
     }
   }, [token]);
 
-  if (!token) {
-    return <Login onLogin={handleLogin} />;
-  }
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={!token ? <Login onLogin={handleLogin} /> : <Navigate to="/dashboard" />} />
 
-  // Admin dashboard handles its own layout
-  if (user?.role === "admin") {
-    return <AdminDashboard token={token} onLogout={handleLogout} />;
-  }
+      {/* Protected Routes */}
+      {token && user?.role === "admin" && (
+        <Route path="/dashboard" element={<AdminDashboard token={token} onLogout={handleLogout} />} />
+      )}
+      {token && user?.role === "user" && (
+        <Route path="/dashboard" element={<UserDashboardWrapper token={token} user={user} onLogout={handleLogout} />} />
+      )}
+      {token && user?.role === "worker" && (
+        <Route path="/dashboard" element={<WorkerDashboardWrapper token={token} user={user} onLogout={handleLogout} />} />
+      )}
 
-  // Other dashboards use the standard wrapper layout
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to={token ? "/dashboard" : "/"} />} />
+    </Routes>
+  );
+}
+
+// Wrapper components for dashboards
+function AdminDashboardWrapper({ token, onLogout }) {
+  return <AdminDashboard token={token} onLogout={onLogout} />;
+}
+
+function UserDashboardWrapper({ token, user, onLogout }) {
   return (
     <div className="app">
       <header className="dashboard-header">
@@ -49,13 +80,34 @@ function App() {
             <span>{user?.role?.toUpperCase()}</span>
             <span>{user?.name || user?.email}</span>
           </div>
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
+          <button onClick={onLogout} className="logout-btn">Logout</button>
         </div>
       </header>
 
       <main>
-        {user?.role === "user" && <UserDashboard token={token} onLogout={handleLogout} />}
-        {user?.role === "worker" && <WorkerDashboard token={token} onLogout={handleLogout} />}
+        {user?.role === "user" && <UserDashboard token={token} onLogout={onLogout} />}
+        {user?.role === "worker" && <WorkerDashboard token={token} onLogout={onLogout} />}
+      </main>
+    </div>
+  );
+}
+
+function WorkerDashboardWrapper({ token, user, onLogout }) {
+  return (
+    <div className="app">
+      <header className="dashboard-header">
+        <h1>Smart Infrastructure Management</h1>
+        <div className="header-actions">
+          <div className="user-info">
+            <span>{user?.role?.toUpperCase()}</span>
+            <span>{user?.name || user?.email}</span>
+          </div>
+          <button onClick={onLogout} className="logout-btn">Logout</button>
+        </div>
+      </header>
+
+      <main>
+        <WorkerDashboard token={token} onLogout={onLogout} />
       </main>
     </div>
   );

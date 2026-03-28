@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
 
+// Background images for dark and light themes (place files in public/ folder)
+const BG_DARK = "/bg-dark.jpg";
+const BG_LIGHT = "/bg-light.jpg";
+
 export default function UserDashboard({ token }) {
+  const [theme, setTheme] = useState("dark");
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -16,8 +21,21 @@ export default function UserDashboard({ token }) {
     fetchIssues();
     // Auto-refresh every 10 seconds to see status updates
     const interval = setInterval(fetchIssues, 10000);
+    
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    
     return () => clearInterval(interval);
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
 
   const fetchIssues = async () => {
     setLoading(true);
@@ -77,7 +95,15 @@ export default function UserDashboard({ token }) {
   };
 
   return (
-    <div className="dashboard">
+    <div className="dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
+      <button 
+        className="theme-toggle-dashboard" 
+        onClick={toggleTheme} 
+        title="Toggle theme"
+        aria-label="Toggle dark/light theme"
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       <div className="dashboard-content">
         <div className="section">
           <h2>Report Infrastructure Issues</h2>
@@ -123,8 +149,8 @@ export default function UserDashboard({ token }) {
               style={{
                 padding: "10px 16px",
                 background: "transparent",
-                color: "#60a5fa",
-                border: "2px solid #60a5fa",
+                color: "#FFCC66",
+                border: "2px solid #FFCC66",
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontWeight: "600",
@@ -140,7 +166,7 @@ export default function UserDashboard({ token }) {
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <h2>Your Reported Issues</h2>
-            <button onClick={fetchIssues} disabled={loading} style={{ padding: "10px 16px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", transition: "all 0.3s ease" }}>
+            <button onClick={fetchIssues} disabled={loading} style={{ padding: "10px 16px", background: "linear-gradient(135deg, #FF9500 0%, #FFCC66 100%)", color: "#ffffff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", transition: "all 0.3s ease" }}>
               🔄 {loading ? "Refreshing..." : "Refresh"}
             </button>
           </div>
