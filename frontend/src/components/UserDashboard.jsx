@@ -268,34 +268,36 @@ export default function UserDashboard({ token }) {
               required
             />
 
-            <div className="location-controls">
-              <button
-                type="button"
-                className="location-btn"
-                onClick={handleUseCurrentLocation}
-                disabled={locationLoading}
-              >
-                {locationLoading ? "Detecting..." : "Use Current Location"}
-              </button>
-              <button
-                type="button"
-                className="location-btn secondary"
-                onClick={handleMapSelection}
-                disabled={locationLoading}
-              >
-                Select on Map
-              </button>
-              <button
-                type="button"
-                className="location-btn ghost"
-                onClick={() => {
-                  setShowMapPicker(false);
-                  setLocationError("");
-                }}
-                disabled={locationLoading}
-              >
-                Manual Entry
-              </button>
+            <div className="location-field-wrapper">
+              <div className="location-controls">
+                <button
+                  type="button"
+                  className="location-btn"
+                  onClick={handleUseCurrentLocation}
+                  disabled={locationLoading}
+                >
+                  {locationLoading ? "Detecting..." : "Use Current Location"}
+                </button>
+                <button
+                  type="button"
+                  className="location-btn secondary"
+                  onClick={handleMapSelection}
+                  disabled={locationLoading}
+                >
+                  Select on Map
+                </button>
+                <button
+                  type="button"
+                  className="location-btn ghost"
+                  onClick={() => {
+                    setShowMapPicker(false);
+                    setLocationError("");
+                  }}
+                  disabled={locationLoading}
+                >
+                  Manual Entry
+                </button>
+              </div>
             </div>
 
             {showMapPicker && (
@@ -340,7 +342,7 @@ export default function UserDashboard({ token }) {
 
             {locationError && <div className="error-message">{locationError}</div>}
 
-            <div className="image-upload-controls">
+            <div className="image-field-wrapper">
               <input
                 ref={cameraInputRef}
                 type="file"
@@ -364,23 +366,25 @@ export default function UserDashboard({ token }) {
                 style={{ display: "none" }}
               />
 
-              <button
-                type="button"
-                className="location-btn"
-                onClick={() => cameraInputRef.current?.click()}
-                disabled={loading}
-              >
-                Capture from Camera
-              </button>
+              <div className="image-upload-controls">
+                <button
+                  type="button"
+                  className="location-btn"
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={loading}
+                >
+                  Capture from Camera
+                </button>
 
-              <button
-                type="button"
-                className="location-btn secondary"
-                onClick={() => uploadInputRef.current?.click()}
-                disabled={loading}
-              >
-                Upload from Device
-              </button>
+                <button
+                  type="button"
+                  className="location-btn secondary"
+                  onClick={() => uploadInputRef.current?.click()}
+                  disabled={loading}
+                >
+                  Upload from Device
+                </button>
+              </div>
             </div>
 
             {imageFile && (

@@ -307,12 +307,10 @@ function LandingPage() {
             </div>
 
             <div className="footer-col">
-              <h4>Contact Information</h4>
+              <h4>Created By</h4>
               <ul>
-                <li>📧 support@smartinfra.com</li>
-                <li>📞 +1 (555) 123-4567</li>
-                <li>📍 123 Tech Street, Innovation City, IC 12345</li>
-                <li>⏰ Available 24/7 for support</li>
+                <li>Yesha Tandel - yeshatandel07@gmail.com</li>
+                <li>Zainab Jambughoda - zainabjambughoda13@gmail.com</li>
               </ul>
             </div>
 
@@ -326,15 +324,7 @@ function LandingPage() {
               </ul>
             </div>
 
-            <div className="footer-col">
-              <h4>Resources</h4>
-              <ul>
-                <li><a href="#">Documentation</a></li>
-                <li><a href="#">API Reference</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-              </ul>
-            </div>
+       
           </div>
 
           <div className="footer-bottom">
