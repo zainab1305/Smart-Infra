@@ -1093,6 +1093,12 @@ body {
   margin: 2px 0;
 }
 
+.image-upload-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 /* ============================================================================
    STATS GRID - PREMIUM CARDS WITH GRADIENTS
    ============================================================================ */

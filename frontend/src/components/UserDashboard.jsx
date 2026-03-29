@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import L from "leaflet";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
@@ -34,6 +34,7 @@ export default function UserDashboard({ token }) {
   const [locationError, setLocationError] = useState("");
   const [locationLoading, setLocationLoading] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(false);
+  const [imageSource, setImageSource] = useState("");
   const [newIssue, setNewIssue] = useState({
     category: "Road Damage",
     location: "",
@@ -42,6 +43,8 @@ export default function UserDashboard({ token }) {
     longitude: null,
   });
   const [imageFile, setImageFile] = useState(null);
+  const cameraInputRef = useRef(null);
+  const uploadInputRef = useRef(null);
 
   const fallbackCenter = { lat: 23.0225, lng: 72.5714 };
   const markerPosition =
@@ -166,6 +169,12 @@ export default function UserDashboard({ token }) {
     }));
   };
 
+  const handleImageSelection = (file, source = "") => {
+    if (!file) return;
+    setImageFile(file);
+    setImageSource(source);
+  };
+
   const handleReportIssue = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -200,6 +209,7 @@ export default function UserDashboard({ token }) {
         longitude: null,
       });
       setImageFile(null);
+      setImageSource("");
       setShowMapPicker(false);
       setLocationError("");
       fetchIssues();
@@ -330,11 +340,54 @@ export default function UserDashboard({ token }) {
 
             {locationError && <div className="error-message">{locationError}</div>}
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImageFile(e.target.files[0])}
-            />
+            <div className="image-upload-controls">
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={(e) => {
+                  handleImageSelection(e.target.files?.[0], "Camera");
+                  e.target.value = "";
+                }}
+                style={{ display: "none" }}
+              />
+
+              <input
+                ref={uploadInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  handleImageSelection(e.target.files?.[0], "Device");
+                  e.target.value = "";
+                }}
+                style={{ display: "none" }}
+              />
+
+              <button
+                type="button"
+                className="location-btn"
+                onClick={() => cameraInputRef.current?.click()}
+                disabled={loading}
+              >
+                Capture from Camera
+              </button>
+
+              <button
+                type="button"
+                className="location-btn secondary"
+                onClick={() => uploadInputRef.current?.click()}
+                disabled={loading}
+              >
+                Upload from Device
+              </button>
+            </div>
+
+            {imageFile && (
+              <p className="location-help-text">
+                Selected image ({imageSource || "File"}): {imageFile.name}
+              </p>
+            )}
 
             <button type="submit" disabled={loading}>
               {loading ? "Reporting..." : "Report Issue"}
@@ -351,6 +404,7 @@ export default function UserDashboard({ token }) {
                   longitude: null,
                 });
                 setImageFile(null);
+                setImageSource("");
                 setShowMapPicker(false);
                 setLocationError("");
               }}
