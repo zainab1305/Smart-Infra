@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
+import ChatPanel from "./ChatPanel";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
@@ -466,6 +467,12 @@ export default function AdminDashboard({ token, onLogout }) {
           onClick={() => setActiveSection("auto-schedule")}
         >
           🤖 Auto Schedule
+        </button>
+        <button
+          className={`nav-btn ${activeSection === "chat" ? "active" : ""}`}
+          onClick={() => setActiveSection("chat")}
+        >
+          💬 Chat
         </button>
         <div style={{ marginTop: "auto", padding: "20px 15px", borderTop: "1px solid rgba(255, 153, 0, 0.1)" }}>
           <button
@@ -1074,6 +1081,13 @@ export default function AdminDashboard({ token, onLogout }) {
                 </p>
               )}
             </div>
+          </div>
+        )}
+
+        {activeSection === "chat" && (
+          <div className="section">
+            <h2>Admin and Worker Chat</h2>
+            <ChatPanel token={token} issueOptions={issues} workerOptions={workers} />
           </div>
         )}
       </div>

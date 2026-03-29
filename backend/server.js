@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const issueRoutes = require("./routes/issueRoutes");
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/taskRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 
 dotenv.config();
 connectDB();
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/issues", issueRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/messages", messageRoutes);
 app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req, res) => {

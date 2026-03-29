@@ -10,6 +10,18 @@ const issueSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    address: {
+      type: String,
+      default: "",
+    },
+    latitude: {
+      type: Number,
+      default: null,
+    },
+    longitude: {
+      type: Number,
+      default: null,
+    },
     imageUrl: {
       type: String,
     },
