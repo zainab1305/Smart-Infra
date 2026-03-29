@@ -128,7 +128,7 @@ Use 3 terminals.
 Terminal 1: image service
 
 1. cd image-service
-2. py -m uvicorn main:app --reload --port 800
+2. py -m uvicorn main:app --reload --port 8000
 
 Terminal 2: backend
 
