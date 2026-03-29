@@ -10,7 +10,7 @@ import {
 const BG_DARK = "/bg-dark.jpg";
 const BG_LIGHT = "/bg-light.jpg";
 
-export default function WorkerDashboard({ token }) {
+export default function WorkerDashboard({ token, onLogout }) {
   const [theme, setTheme] = useState("dark");
   const [activeSection, setActiveSection] = useState("tasks");
   const [myTasks, setMyTasks] = useState([]);
@@ -129,6 +129,15 @@ export default function WorkerDashboard({ token }) {
         >
           💬 Chat
         </button>
+        <div style={{ marginTop: "auto", padding: "20px 15px", borderTop: "1px solid rgba(59, 130, 246, 0.1)" }}>
+          <button
+            onClick={onLogout}
+            className="logout-btn"
+            style={{ width: "100%" }}
+          >
+            🚪 Logout
+          </button>
+        </div>
       </nav>
 
       <div className="dashboard-content">

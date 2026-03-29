@@ -174,9 +174,26 @@ body {
   align-items: center;
   justify-content: center;
   margin-top: 60px;
-  background: linear-gradient(135deg, rgba(26, 31, 58, 0.4) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(26, 40, 71, 0.4) 100%);
+  background: 
+    radial-gradient(circle, rgba(200, 200, 200, 0.3) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-color: var(--bg-primary);
   overflow: hidden;
   transition: background 0.3s ease;
+}
+
+[data-theme="light"] .hero-section {
+  background: 
+    radial-gradient(circle, rgba(150, 150, 150, 0.25) 1px, transparent 1px),
+    var(--bg-primary);
+  background-size: 30px 30px;
+}
+
+[data-theme="dark"] .hero-section {
+  background: 
+    radial-gradient(circle, rgba(100, 130, 180, 0.3) 1px, transparent 1px),
+    var(--bg-primary);
+  background-size: 30px 30px;
 }
 
 .hero-overlay {
@@ -185,29 +202,40 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at center top, rgba(59, 130, 246, 0.05), transparent 60%);
+  background: radial-gradient(circle at center top, rgba(59, 130, 246, 0.02), transparent 60%);
   z-index: 1;
 }
 
 [data-theme="light"] .hero-overlay {
-  background: radial-gradient(circle at center top, rgba(30, 58, 95, 0.04), transparent 60%);
+  background: radial-gradient(circle at center top, rgba(30, 58, 95, 0.02), transparent 60%);
+}
+
+[data-theme="dark"] .hero-overlay {
+  background: radial-gradient(circle at center top, rgba(59, 130, 246, 0.03), transparent 60%);
 }
 
 .hero-glow {
   position: absolute;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, rgba(139, 92, 246, 0.2) 30%, transparent 70%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, rgba(59, 130, 246, 0.3) 25%, rgba(59, 130, 246, 0.1) 50%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 1;
-  filter: blur(40px);
+  filter: blur(50px);
   transform: translate(-50%, -50%);
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 0 100px rgba(59, 130, 246, 0.4);
 }
 
 [data-theme="light"] .hero-glow {
-  background: radial-gradient(circle, rgba(184, 134, 11, 0.3) 0%, rgba(184, 134, 11, 0.15) 30%, transparent 70%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(59, 130, 246, 0.25) 25%, rgba(59, 130, 246, 0.08) 50%, transparent 70%);
+  box-shadow: 0 0 100px rgba(59, 130, 246, 0.35);
+}
+
+[data-theme="dark"] .hero-glow {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.6) 0%, rgba(59, 130, 246, 0.3) 25%, rgba(59, 130, 246, 0.1) 50%, transparent 70%);
+  box-shadow: 0 0 100px rgba(59, 130, 246, 0.4);
 }
 
 .hero-content {

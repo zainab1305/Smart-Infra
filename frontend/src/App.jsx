@@ -102,7 +102,6 @@ function WorkerDashboardWrapper({ token, user, onLogout }) {
             <span>{user?.role?.toUpperCase()}</span>
             <span>{user?.name || user?.email}</span>
           </div>
-          <button onClick={onLogout} className="logout-btn">Logout</button>
         </div>
       </header>
 
