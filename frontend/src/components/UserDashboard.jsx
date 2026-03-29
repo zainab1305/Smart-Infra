@@ -303,7 +303,7 @@ export default function UserDashboard({ token }) {
                 <MapContainer
                   center={[markerPosition.lat, markerPosition.lng]}
                   zoom={13}
-                  style={{ width: "100%", height: "320px", borderRadius: "10px" }}
+                  className="issue-map"
                 >
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -389,47 +389,39 @@ export default function UserDashboard({ token }) {
               </p>
             )}
 
-            <button type="submit" disabled={loading}>
-              {loading ? "Reporting..." : "Report Issue"}
-            </button>
+            <div className="form-actions">
+              <button type="submit" disabled={loading}>
+                {loading ? "Reporting..." : "Report Issue"}
+              </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setNewIssue({
-                  category: "Road Damage",
-                  location: "",
-                  address: "",
-                  latitude: null,
-                  longitude: null,
-                });
-                setImageFile(null);
-                setImageSource("");
-                setShowMapPicker(false);
-                setLocationError("");
-              }}
-              disabled={loading}
-              style={{
-                padding: "10px 16px",
-                background: "transparent",
-                color: "#FFCC66",
-                border: "2px solid #FFCC66",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "600",
-                transition: "all 0.3s ease",
-                marginLeft: "8px",
-              }}
-            >
-              ↻ Reset
-            </button>
+              <button
+                type="button"
+                className="form-reset-btn"
+                onClick={() => {
+                  setNewIssue({
+                    category: "Road Damage",
+                    location: "",
+                    address: "",
+                    latitude: null,
+                    longitude: null,
+                  });
+                  setImageFile(null);
+                  setImageSource("");
+                  setShowMapPicker(false);
+                  setLocationError("");
+                }}
+                disabled={loading}
+              >
+                ↻ Reset
+              </button>
+            </div>
           </form>
 
           {error && <div className="error-message">{error}</div>}
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+          <div className="section-head-row">
             <h2>Your Reported Issues</h2>
-            <button onClick={fetchIssues} disabled={loading} style={{ padding: "10px 16px", background: "linear-gradient(135deg, #FF9500 0%, #FFCC66 100%)", color: "#ffffff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", transition: "all 0.3s ease" }}>
+            <button onClick={fetchIssues} disabled={loading} className="refresh-btn">
               🔄 {loading ? "Refreshing..." : "Refresh"}
             </button>
           </div>
