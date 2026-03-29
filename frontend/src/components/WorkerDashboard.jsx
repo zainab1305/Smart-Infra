@@ -302,7 +302,7 @@ export default function WorkerDashboard({ token }) {
                       label={({ name, value }) => `${name}: ${value}%`}
                     >
                       <Cell fill="#22c55e" />
-                      <Cell fill="rgba(255, 153, 0, 0.2)" />
+                      <Cell fill="rgba(59, 130, 246, 0.3)" />
                     </Pie>
                     <Tooltip formatter={(value) => `${value}%`} />
                   </PieChart>
@@ -323,12 +323,12 @@ export default function WorkerDashboard({ token }) {
                       {
                         name: "In Progress",
                         value: inProgressTasks.length,
-                        fill: "#FF9500",
+                        fill: "#fbbf24",
                       },
                       {
                         name: "Scheduled",
                         value: scheduledTasks.length,
-                        fill: "#f59e0b",
+                        fill: "#3b82f6",
                       },
                       {
                         name: "Rejected",
@@ -341,18 +341,18 @@ export default function WorkerDashboard({ token }) {
                     <XAxis dataKey="name" stroke="#cbd5e1" style={{ fontSize: "0.75rem" }} />
                     <YAxis stroke="#cbd5e1" style={{ fontSize: "0.75rem" }} />
                     <Tooltip
-                      cursor={{ fill: "rgba(255, 153, 0, 0.1)" }}
+                      cursor={{ fill: "rgba(59, 130, 246, 0.1)" }}
                       contentStyle={{
                         backgroundColor: "rgba(15, 23, 42, 0.95)",
-                        border: "1px solid rgba(255, 153, 0, 0.3)",
+                        border: "1px solid rgba(59, 130, 246, 0.3)",
                         borderRadius: "6px",
                         color: "#e2e8f0",
                       }}
                     />
                     <Bar dataKey="value" fill="#8884d8" radius={6}>
                       <Cell fill="#22c55e" />
-                      <Cell fill="#FF9500" />
-                      <Cell fill="#f59e0b" />
+                      <Cell fill="#fbbf24" />
+                      <Cell fill="#3b82f6" />
                       <Cell fill="#ef4444" />
                     </Bar>
                   </BarChart>

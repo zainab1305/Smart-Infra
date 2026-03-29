@@ -426,7 +426,7 @@ export default function AdminDashboard({ token, onLogout }) {
       {/* Sidebar Navigation */}
       <nav className="dashboard-nav">
         <div style={{ padding: "20px 15px", borderBottom: "1px solid rgba(255, 153, 0, 0.1)" }}>
-          <h3 style={{ color: "#ffffff", fontSize: "1rem", fontWeight: "700", marginBottom: "20px" }}>Smart Infra</h3>
+          <h3 style={{ color: theme === "dark" ? "#ffffff" : "#000000", fontSize: "1rem", fontWeight: "700", marginBottom: "20px" }}>Smart Infra</h3>
         </div>
         <button
           className={`nav-btn ${activeSection === "home" ? "active" : ""}`}
@@ -494,7 +494,7 @@ export default function AdminDashboard({ token, onLogout }) {
           <div className="user-info">
             <span>👤 Administrator</span>
           </div>
-          <button onClick={fetchDashboardData} disabled={loading} style={{ padding: "10px 16px", background: "linear-gradient(135deg, #FF9500 0%, #FFCC66 100%)", color: "#ffffff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
+          <button onClick={fetchDashboardData} disabled={loading} style={{ padding: "10px 16px", background: theme === "dark" ? "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)" : "linear-gradient(135deg, #1E3A5F 0%, #3b82f6 100%)", color: "#ffffff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
             🔄 {loading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
@@ -544,8 +544,8 @@ export default function AdminDashboard({ token, onLogout }) {
                       animationDuration={1200}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 153, 0, 0.1)" />
-                      <XAxis dataKey="day" stroke="#94a3b8" />
-                      <YAxis stroke="#94a3b8" />
+                      <XAxis dataKey="day" stroke={theme === "dark" ? "#94a3b8" : "#000000"} />
+                      <YAxis stroke={theme === "dark" ? "#94a3b8" : "#000000"} />
                       <Tooltip 
                         contentStyle={{
                           background: "rgba(15, 23, 42, 0.9)",
@@ -887,7 +887,7 @@ export default function AdminDashboard({ token, onLogout }) {
                 disabled={priorityLoading}
                 style={{
                   padding: "10px 16px",
-                  background: "linear-gradient(135deg, #FF9500 0%, #FFCC66 100%)",
+                  background: theme === "dark" ? "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)" : "linear-gradient(135deg, #1E3A5F 0%, #3b82f6 100%)",
                   color: "#ffffff",
                   border: "none",
                   borderRadius: "8px",
@@ -989,9 +989,9 @@ export default function AdminDashboard({ token, onLogout }) {
                   style={{
                     padding: "10px 12px",
                     borderRadius: "8px",
-                    border: "1px solid rgba(148, 163, 184, 0.4)",
-                    background: "rgba(15, 23, 42, 0.6)",
-                    color: "#e2e8f0",
+                    border: "1px solid rgba(59, 130, 246, 0.4)",
+                    background: theme === "dark" ? "#ffffff" : "#ffffff",
+                    color: "#000000",
                     minWidth: "220px"
                   }}
                 />
@@ -1002,7 +1002,7 @@ export default function AdminDashboard({ token, onLogout }) {
                 disabled={autoScheduleLoading}
                 style={{
                   padding: "12px 24px",
-                  background: autoScheduleLoading ? "#64748b" : "#FF9500",
+                  background: autoScheduleLoading ? "#64748b" : (theme === "dark" ? "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)" : "linear-gradient(135deg, #1E3A5F 0%, #3b82f6 100%)"),
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",

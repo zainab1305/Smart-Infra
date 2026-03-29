@@ -149,8 +149,8 @@ export default function UserDashboard({ token }) {
               style={{
                 padding: "10px 16px",
                 background: "transparent",
-                color: "#FFCC66",
-                border: "2px solid #FFCC66",
+                color: theme === "dark" ? "#93c5fd" : "#1E3A5F",
+                border: theme === "dark" ? "2px solid #93c5fd" : "2px solid #1E3A5F",
                 borderRadius: "8px",
                 cursor: "pointer",
                 fontWeight: "600",
@@ -166,7 +166,7 @@ export default function UserDashboard({ token }) {
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <h2>Your Reported Issues</h2>
-            <button onClick={fetchIssues} disabled={loading} style={{ padding: "10px 16px", background: "linear-gradient(135deg, #FF9500 0%, #FFCC66 100%)", color: "#ffffff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", transition: "all 0.3s ease" }}>
+            <button onClick={fetchIssues} disabled={loading} style={{ padding: "10px 16px", background: theme === "dark" ? "linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)" : "linear-gradient(135deg, #1E3A5F 0%, #3b82f6 100%)", color: "#ffffff", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", transition: "all 0.3s ease" }}>
               🔄 {loading ? "Refreshing..." : "Refresh"}
             </button>
           </div>

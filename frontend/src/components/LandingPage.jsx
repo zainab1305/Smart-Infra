@@ -155,7 +155,7 @@ function LandingPage() {
                 <div className="stat-label">Active Users</div>
               </div>
               <div className="stat-card">
-                <div className="stat-number">10K+</div>
+                <div className="stat-number">100+</div>
                 <div className="stat-label">Issues Resolved</div>
               </div>
               <div className="stat-card">
@@ -245,11 +245,11 @@ function LandingPage() {
 
           <div className="trust-content">
             <div className="trust-stat">
-              <div className="trust-number">150+</div>
-              <div className="trust-text">Cities & Municipalities</div>
+              <div className="trust-number">50+</div>
+              <div className="trust-text">Sensors Conected</div>
             </div>
             <div className="trust-stat">
-              <div className="trust-number">50K+</div>
+              <div className="trust-number">100+</div>
               <div className="trust-text">Assets Monitored</div>
             </div>
             <div className="trust-stat">
@@ -257,8 +257,8 @@ function LandingPage() {
               <div className="trust-text">System Reliability</div>
             </div>
             <div className="trust-stat">
-              <div className="trust-number">1M+</div>
-              <div className="trust-text">Issues Managed</div>
+              <div className="trust-number">50+</div>
+              <div className="trust-text">Cities Supported</div>
             </div>
           </div>
 

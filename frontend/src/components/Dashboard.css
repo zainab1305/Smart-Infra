@@ -29,7 +29,7 @@
   --nav-bg: linear-gradient(180deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
   --gradient-overlay: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(26, 40, 71, 0.95) 50%, rgba(15, 23, 42, 0.95) 100%);
   --form-input-bg: rgba(10, 10, 10, 0.8);
-  --form-input-border: rgba(232, 165, 71, 0.3);
+  --form-input-border: rgba(59, 130, 246, 0.3);
 }
 
 /* Light Theme */
@@ -178,7 +178,7 @@ body {
   background: var(--nav-bg);
   border-right: 1px solid var(--border-color);
   backdrop-filter: blur(20px);
-  padding: 0;
+  padding: 40px 0 0 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -617,7 +617,7 @@ body {
 .stat-card {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(232, 165, 71, 0.15);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
   border-radius: 0;
   padding: 6px 0;
   text-align: center;
@@ -666,7 +666,7 @@ body {
 
 .chart-card {
   background: linear-gradient(135deg, rgba(20, 20, 20, 0.7) 0%, rgba(15, 15, 15, 0.6) 100%);
-  border: 1px solid rgba(232, 165, 71, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 8px;
   padding: 8px;
   box-shadow: none;
@@ -696,8 +696,8 @@ body {
    ============================================================================ */
 
 .issue-card {
-  background: linear-gradient(135deg, rgba(20, 20, 20, 0.7) 0%, rgba(15, 15, 15, 0.6) 100%);
-  border: 1px solid rgba(232, 165, 71, 0.2);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 6px;
   padding: 6px;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
@@ -710,19 +710,19 @@ body {
 .issue-card h4 {
   font-size: 1rem;
   font-weight: 700;
-  color: #D9CCC3;
+  color: #93c5fd;
   margin-bottom: 6px;
 }
 
 .issue-card-user p {
-  color: #D9CCC3;
+  color: #cbd5e1;
   margin-bottom: 6px;
   font-size: 0.9rem;
   font-weight: 400;
 }
 
 .issue-card p {
-  color: #E5D4C4;
+  color: #cbd5e1;
   margin-bottom: 4px;
   font-size: 0.8rem;
   font-weight: 400;
@@ -739,8 +739,8 @@ body {
 
 .task-card,
 .worker-card {
-  background: rgba(20, 20, 20, 0.4);
-  border: 1px solid rgba(232, 165, 71, 0.2);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 6px;
   padding: 10px 12px;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
@@ -764,16 +764,17 @@ body {
 
 .issue-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(232, 165, 71, 0.4);
-  box-shadow: 0 4px 16px rgba(232, 165, 71, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
 }
 
 .task-card:hover,
 .worker-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(232, 165, 71, 0.4);
-  box-shadow: 0 4px 12px rgba(232, 165, 71, 0.15);
-  background: rgba(232, 165, 71, 0.08);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
 }
 
 .priority-task-card {
@@ -781,9 +782,9 @@ body {
 }
 
 .priority-task-card.selected {
-  border-color: rgba(232, 165, 71, 0.7);
-  box-shadow: 0 0 0 1px rgba(232, 165, 71, 0.6);
-  background: rgba(232, 165, 71, 0.12);
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.12);
 }
 
 .issue-header {
@@ -798,12 +799,12 @@ body {
 .worker-card h4 {
   font-size: 1rem;
   font-weight: 700;
-  color: #D9CCC3;
+  color: #93c5fd;
 }
 
 .task-card p,
 .worker-card p {
-  color: #E5D4C4;
+  color: #cbd5e1;
   margin-bottom: 5px;
   font-size: 0.85rem;
   font-weight: 500;
@@ -811,22 +812,161 @@ body {
   overflow-wrap: anywhere;
 }
 
-/* Prevent light-theme leakage from other component styles. */
-.dashboard .task-card.completed {
-  background: rgba(232, 165, 71, 0.12);
-  border-color: rgba(232, 165, 71, 0.35);
-  border-left: 3px solid rgba(232, 165, 71, 0.75);
-}
+/* Completed cards now use status-specific styling via :has() selector */
 
 .issue-card .explanation {
-  background: rgba(232, 165, 71, 0.1);
-  border-left: 3px solid #D9CCC3;
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 3px solid #93c5fd;
   padding: 6px 8px;
   border-radius: 3px;
   margin-top: 6px;
   font-size: 0.75rem;
-  color: #D9CCC3;
+  color: #93c5fd;
   line-height: 1.4;
+}
+
+/* ============================================================================
+   ISSUE CARD STATUS SPECIFIC COLORS
+   ============================================================================ */
+
+/* Resolved - Green */
+.issue-card:has(.status-Resolved) {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.issue-card:has(.status-Resolved):hover {
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.15);
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.issue-card:has(.status-Resolved) h4 {
+  color: #86efac;
+}
+
+/* Assigned - Blue */
+.issue-card:has(.status-Assigned) {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.issue-card:has(.status-Assigned):hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.issue-card:has(.status-Assigned) h4 {
+  color: #93c5fd;
+}
+
+/* Rejected - Red */
+.issue-card:has(.status-Rejected) {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.issue-card:has(.status-Rejected):hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.issue-card:has(.status-Rejected) h4 {
+  color: #fca5a5;
+}
+
+/* Reported - Orange (default blue for other statuses) */
+.issue-card:has(.status-Reported) {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.issue-card:has(.status-Reported):hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+/* ============================================================================
+   TASK CARD STATUS SPECIFIC COLORS
+   ============================================================================ */
+
+/* Scheduled - Blue */
+.task-card:has(.status-Scheduled),
+.worker-task-card:has(.status-Scheduled) {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+.task-card:has(.status-Scheduled):hover,
+.worker-task-card:has(.status-Scheduled):hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.task-card:has(.status-Scheduled) h4,
+.worker-task-card:has(.status-Scheduled) h4 {
+  color: #93c5fd !important;
+}
+
+/* In Progress - Yellow */
+.task-card:has(.status-InProgress),
+.worker-task-card:has(.status-InProgress) {
+  background: rgba(245, 158, 11, 0.08) !important;
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.task-card:has(.status-InProgress):hover,
+.worker-task-card:has(.status-InProgress):hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.task-card:has(.status-InProgress) h4,
+.worker-task-card:has(.status-InProgress) h4 {
+  color: #fbbf24 !important;
+}
+
+/* Completed - Green */
+.task-card:has(.status-Completed),
+.worker-task-card:has(.status-Completed) {
+  background: rgba(34, 197, 94, 0.08) !important;
+  border-color: rgba(34, 197, 94, 0.2) !important;
+}
+
+.task-card:has(.status-Completed):hover,
+.worker-task-card:has(.status-Completed):hover {
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.15);
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.task-card:has(.status-Completed) h4,
+.worker-task-card:has(.status-Completed) h4 {
+  color: #86efac !important;
+}
+
+/* Rejected - Red */
+.task-card:has(.status-Rejected),
+.worker-task-card:has(.status-Rejected) {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+.task-card:has(.status-Rejected):hover,
+.worker-task-card:has(.status-Rejected):hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.task-card:has(.status-Rejected) h4,
+.worker-task-card:has(.status-Rejected) h4 {
+  color: #fca5a5 !important;
 }
 
 /* ============================================================================
@@ -845,52 +985,52 @@ body {
 }
 
 .status-Reported {
-  background: rgba(232, 165, 71, 0.15);
-  color: #FFD699;
-  border: 1px solid rgba(232, 165, 71, 0.3);
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .status-Assigned {
-  background: rgba(232, 165, 71, 0.15);
-  color: #FFD699;
-  border: 1px solid rgba(232, 165, 71, 0.3);
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .status-Scheduled {
-  background: rgba(232, 165, 71, 0.15);
-  color: #FFD699;
-  border: 1px solid rgba(232, 165, 71, 0.3);
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .status-Resolved {
-  background: rgba(232, 165, 71, 0.15);
-  color: #FFD699;
-  border: 1px solid rgba(232, 165, 71, 0.3);
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .status-Pending {
-  background: rgba(232, 165, 71, 0.25);
-  color: #E8A547;
-  border: 1px solid rgba(232, 165, 71, 0.5);
+  background: rgba(59, 130, 246, 0.25);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.5);
   font-weight: 800;
 }
 
 .status-InProgress {
-  background: rgba(232, 165, 71, 0.2);
-  color: #E8A547;
-  border: 1px solid rgba(232, 165, 71, 0.5);
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.5);
 }
 
 .status-Completed {
-  background: linear-gradient(135deg, rgba(232, 165, 71, 0.15) 0%, rgba(255, 200, 100, 0.1) 100%);
-  color: #E8A547;
-  border: 1px solid rgba(232, 165, 71, 0.4);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(74, 222, 128, 0.1) 100%);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.4);
 }
 
 .status-Rejected {
-  background: rgba(232, 165, 71, 0.15);
-  color: #FFD699;
-  border: 1px solid rgba(232, 165, 71, 0.3);
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 /* ============================================================================
@@ -900,7 +1040,7 @@ body {
 .week-summary {
   background: transparent;
   border: none;
-  border-top: 1px solid rgba(232, 165, 71, 0.15);
+  border-top: 1px solid rgba(59, 130, 246, 0.15);
   border-radius: 0;
   padding: 8px 0;
   box-shadow: none;
@@ -921,7 +1061,7 @@ body {
   gap: 2px;
   margin-top: 3px;
   padding-top: 3px;
-  border-top: 1px solid rgba(232, 165, 71, 0.1);
+  border-top: 1px solid rgba(59, 130, 246, 0.1);
 }
 
 .task-stats span {
@@ -953,7 +1093,7 @@ body {
 
 .form {
   background: transparent;
-  border: 1px solid rgba(232, 165, 71, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.15);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 15px;
@@ -1000,13 +1140,13 @@ body {
 .form textarea:focus {
   outline: none;
   border-color: var(--accent-primary);
-  background: rgba(232, 165, 71, 0.05);
-  box-shadow: 0 0 0 2px rgba(232, 165, 71, 0.1);
+  background: rgba(59, 130, 246, 0.05);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .form button {
   padding: 10px 18px;
-  background: linear-gradient(135deg, #E8A547 0%, #D9CCC3 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
   color: var(--text-primary);
   border: none;
   border-radius: 8px;
@@ -1014,14 +1154,14 @@ body {
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-  box-shadow: 0 4px 12px rgba(232, 165, 71, 0.2);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
   align-self: flex-start;
 }
 
 .form button:hover:not(:disabled) {
-  background: #eab308;
+  background: #0ea5e9;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(250, 204, 21, 0.3);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
 }
 
 .form button:disabled {
@@ -1109,9 +1249,9 @@ body {
 .view-btn,
 .back-btn {
   padding: 6px 14px;
-  background: rgba(232, 165, 71, 0.15);
-  color: #D9CCC3;
-  border: 1px solid rgba(232, 165, 71, 0.3);
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 5px;
   font-weight: 600;
   font-size: 0.85rem;
@@ -1121,9 +1261,9 @@ body {
 
 .view-btn:hover,
 .back-btn:hover {
-  background: rgba(232, 165, 71, 0.25);
-  border-color: rgba(232, 165, 71, 0.5);
-  color: #E8A547;
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #60a5fa;
 }
 
 .accept-btn {
@@ -1180,22 +1320,22 @@ body {
 .submit-btn,
 .complete-btn {
   padding: 10px 20px;
-  background: #E8A547;
-  color: #1a1a1a;
+  background: #3b82f6;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-  box-shadow: 0 4px 12px rgba(232, 165, 71, 0.25);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
 }
 
 .submit-btn:hover:not(:disabled),
 .complete-btn:hover:not(:disabled) {
-  background: #D9CCC3;
+  background: #0ea5e9;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(232, 165, 71, 0.35);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
 }
 
 .submit-btn:disabled,
@@ -1248,12 +1388,12 @@ body {
 }
 
 .task-section h3 {
-  color: #E8A547;
+  color: #93c5fd;
   font-size: 1rem;
   margin-bottom: 10px;
   font-weight: 700;
   padding: 8px 0;
-  border-bottom: 2px solid rgba(232, 165, 71, 0.2);
+  border-bottom: 2px solid rgba(59, 130, 246, 0.2);
 }
 
 .response-form {
@@ -1275,7 +1415,7 @@ body {
   width: 100%;
   padding: 10px 12px;
   background: rgba(10, 10, 10, 0.8);
-  border: 1px solid rgba(232, 165, 71, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 6px;
   color: #E5D4C4;
   font-size: 0.9rem;
@@ -1288,9 +1428,9 @@ body {
 
 .response-form textarea:focus {
   outline: none;
-  border-color: rgba(232, 165, 71, 0.6);
-  background: rgba(232, 165, 71, 0.05);
-  box-shadow: 0 0 0 2px rgba(232, 165, 71, 0.1);
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.05);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 /* ============================================================================
@@ -1305,24 +1445,24 @@ body {
 }
 
 .chart-box {
-  background: rgba(20, 20, 20, 0.5);
-  border: 1px solid rgba(232, 165, 71, 0.2);
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.15);
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
 .chart-box:hover {
-  border-color: rgba(232, 165, 71, 0.4);
-  box-shadow: 0 4px 16px rgba(232, 165, 71, 0.1);
-  background: rgba(20, 20, 20, 0.6);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .chart-box h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #D9CCC3;
+  color: #93c5fd;
   margin-bottom: 14px;
   text-align: center;
 }
@@ -1339,7 +1479,7 @@ body {
 
 .recharts-default-tooltip {
   background: rgba(10, 10, 10, 0.95) !important;
-  border: 1px solid rgba(232, 165, 71, 0.3) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
   border-radius: 6px !important;
 }
 
@@ -1348,16 +1488,299 @@ body {
 }
 
 .recharts-tooltip-item {
-  color: #E8A547 !important;
+  color: #60a5fa !important;
 }
 
 .recharts-text {
-  fill: #D9CCC3 !important;
+  fill: #000000 !important;
   font-size: 0.75rem !important;
 }
 
 .recharts-cartesian-axis-tick {
-  fill: #D9CCC3 !important;
+  fill: #000000 !important;
+}
+
+/* ============================================================================
+   LIGHT THEME OVERRIDES
+   ============================================================================ */
+
+[data-theme="light"] .status-Reported,
+[data-theme="light"] .status-Assigned,
+[data-theme="light"] .status-Scheduled,
+[data-theme="light"] .status-Resolved {
+  background: rgba(30, 58, 95, 0.12);
+  color: #1E3A5F;
+  border: 1px solid rgba(30, 58, 95, 0.3);
+}
+
+[data-theme="light"] .status-Rejected {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="light"] .status-InProgress {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+[data-theme="light"] .status-Completed {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+[data-theme="light"] .status-Pending {
+  background: rgba(30, 58, 95, 0.2);
+  color: #1E3A5F;
+  border: 1px solid rgba(30, 58, 95, 0.4);
+  font-weight: 800;
+}
+
+[data-theme="light"] .week-summary {
+  border-top: 1px solid rgba(30, 58, 95, 0.12);
+}
+
+[data-theme="light"] .task-stats {
+  border-top: 1px solid rgba(30, 58, 95, 0.08);
+}
+
+[data-theme="light"] .form {
+  border: 1px solid rgba(30, 58, 95, 0.12);
+}
+
+[data-theme="light"] .form input:focus,
+[data-theme="light"] .form select:focus,
+[data-theme="light"] .form textarea:focus {
+  background: rgba(30, 58, 95, 0.05);
+  box-shadow: 0 0 0 2px rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .form button {
+  background: linear-gradient(135deg, #1E3A5F 0%, #3b82f6 100%);
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.2);
+}
+
+[data-theme="light"] .form button:hover:not(:disabled) {
+  background: #0ea5e9;
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+}
+
+[data-theme="light"] .view-btn,
+[data-theme="light"] .back-btn {
+  background: rgba(30, 58, 95, 0.12);
+  color: #1E3A5F;
+  border: 1px solid rgba(30, 58, 95, 0.3);
+}
+
+[data-theme="light"] .view-btn:hover,
+[data-theme="light"] .back-btn:hover {
+  background: rgba(30, 58, 95, 0.2);
+  border-color: rgba(30, 58, 95, 0.5);
+  color: #3b82f6;
+}
+
+[data-theme="light"] .submit-btn,
+[data-theme="light"] .complete-btn {
+  background: #1E3A5F;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.25);
+}
+
+[data-theme="light"] .submit-btn:hover:not(:disabled),
+[data-theme="light"] .complete-btn:hover:not(:disabled) {
+  background: #3b82f6;
+  box-shadow: 0 6px 20px rgba(30, 58, 95, 0.35);
+}
+
+[data-theme="light"] .task-card.completed {
+  background: rgba(30, 58, 95, 0.1);
+  border-color: rgba(30, 58, 95, 0.25);
+  border-left: 3px solid rgba(30, 58, 95, 0.6);
+}
+
+[data-theme="light"] .issue-card .explanation {
+  background: rgba(30, 58, 95, 0.08);
+  border-left: 3px solid #1E3A5F;
+  color: #1E3A5F;
+}
+
+/* Light theme issue card status colors */
+[data-theme="light"] .issue-card:has(.status-Resolved) {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+[data-theme="light"] .issue-card:has(.status-Resolved):hover {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.15);
+}
+
+[data-theme="light"] .issue-card:has(.status-Resolved) h4 {
+  color: #16a34a;
+}
+
+[data-theme="light"] .issue-card:has(.status-Assigned) {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+[data-theme="light"] .issue-card:has(.status-Assigned):hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="light"] .issue-card:has(.status-Assigned) h4 {
+  color: #1E3A5F;
+}
+
+[data-theme="light"] .issue-card:has(.status-Rejected) {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+[data-theme="light"] .issue-card:has(.status-Rejected):hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="light"] .issue-card:has(.status-Rejected) h4 {
+  color: #dc2626;
+}
+
+[data-theme="light"] .issue-card h4 {
+  color: #1E3A5F;
+}
+
+[data-theme="light"] .issue-card-user p {
+  color: #3b82f6;
+}
+
+[data-theme="light"] .issue-card p {
+  color: #3b82f6;
+}
+
+/* Light theme task card status colors */
+[data-theme="light"] .task-card:has(.status-Scheduled),
+[data-theme="light"] .worker-task-card:has(.status-Scheduled) {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+[data-theme="light"] .task-card:has(.status-Scheduled):hover,
+[data-theme="light"] .worker-task-card:has(.status-Scheduled):hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="light"] .task-card:has(.status-InProgress),
+[data-theme="light"] .worker-task-card:has(.status-InProgress) {
+  background: rgba(245, 158, 11, 0.08) !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+[data-theme="light"] .task-card:has(.status-InProgress):hover,
+[data-theme="light"] .worker-task-card:has(.status-InProgress):hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.15);
+}
+
+[data-theme="light"] .task-card:has(.status-InProgress) h4,
+[data-theme="light"] .worker-task-card:has(.status-InProgress) h4 {
+  color: #d97706 !important;
+}
+
+[data-theme="light"] .task-card:has(.status-Completed),
+[data-theme="light"] .worker-task-card:has(.status-Completed) {
+  background: rgba(34, 197, 94, 0.08) !important;
+  border-color: rgba(34, 197, 94, 0.25) !important;
+}
+
+[data-theme="light"] .task-card:has(.status-Completed):hover,
+[data-theme="light"] .worker-task-card:has(.status-Completed):hover {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.15);
+}
+
+[data-theme="light"] .task-card:has(.status-Completed) h4,
+[data-theme="light"] .worker-task-card:has(.status-Completed) h4 {
+  color: #16a34a !important;
+}
+
+[data-theme="light"] .task-card:has(.status-Rejected),
+[data-theme="light"] .worker-task-card:has(.status-Rejected) {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+[data-theme="light"] .task-card:has(.status-Rejected):hover,
+[data-theme="light"] .worker-task-card:has(.status-Rejected):hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="light"] .task-card:has(.status-Rejected) h4,
+[data-theme="light"] .worker-task-card:has(.status-Rejected) h4 {
+  color: #dc2626 !important;
+}
+
+[data-theme="light"] .task-section h3 {
+  color: #1E3A5F;
+  border-bottom: 2px solid rgba(30, 58, 95, 0.15);
+}
+
+[data-theme="light"] .response-form textarea {
+  border: 1px solid rgba(30, 58, 95, 0.2);
+}
+
+[data-theme="light"] .response-form textarea:focus {
+  border-color: rgba(30, 58, 95, 0.6);
+  background: rgba(30, 58, 95, 0.05);
+  box-shadow: 0 0 0 2px rgba(30, 58, 95, 0.1);
+}
+
+[data-theme="light"] .chart-box {
+  background: rgba(59, 130, 246, 0.04);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+}
+
+[data-theme="light"] .chart-box:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="light"] .chart-box h3 {
+  color: #1E3A5F;
+}
+
+[data-theme="light"] .task-card,
+[data-theme="light"] .worker-card {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="light"] .task-card:hover,
+[data-theme="light"] .worker-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.15);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="light"] .task-card h4,
+[data-theme="light"] .worker-card h4 {
+  color: #1E3A5F;
+}
+
+[data-theme="light"] .task-card p,
+[data-theme="light"] .worker-card p {
+  color: #3b82f6;
+}
+
+[data-theme="light"] .priority-task-card.selected {
+  border-color: rgba(59, 130, 246, 0.7);
+  background: rgba(59, 130, 246, 0.12);
 }
 
 /* Responsive charts */
