@@ -8,6 +8,12 @@ const router = express.Router();
 
 const normalizeLocation = (value = "") => value.replace(/\s+/g, " ").trim();
 
+const parseCoordinate = (value) => {
+  if (value === undefined || value === null || value === "") return null;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+};
+
 const tokenizeLocation = (value = "") =>
   normalizeLocation(value)
     .toLowerCase()
@@ -44,7 +50,10 @@ const isSimilarArea = (locationA = "", locationB = "") => {
 router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
   try {
     let confidenceScore = 0;
-    const normalizedLocation = normalizeLocation(req.body.location || "");
+    const normalizedLocation = normalizeLocation(req.body.location || req.body.address || "");
+    const normalizedAddress = normalizeLocation(req.body.address || normalizedLocation);
+    const latitude = parseCoordinate(req.body.latitude);
+    const longitude = parseCoordinate(req.body.longitude);
 
     const sameCategoryIssues = await Issue.find({ category: req.body.category }).select("location");
 
@@ -72,6 +81,9 @@ router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
     const issue = new Issue({
       category: req.body.category,
       location: normalizedLocation,
+      address: normalizedAddress,
+      latitude,
+      longitude,
       imageUrl: req.file ? req.file.path : null,
       confidenceScore,
       priorityScore,
