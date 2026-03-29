@@ -1106,6 +1106,115 @@ body {
   gap: 8px;
 }
 
+.chat-panel-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chat-filter-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.chat-issue-select {
+  min-width: 260px;
+  padding: 10px 12px;
+  background: var(--form-input-bg);
+  border: 1px solid var(--form-input-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+}
+
+.chat-history {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 320px;
+  max-height: 460px;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.chat-message-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.chat-message-row.mine {
+  justify-content: flex-end;
+}
+
+.chat-message-row.other {
+  justify-content: flex-start;
+}
+
+.chat-message-bubble {
+  max-width: 80%;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid transparent;
+}
+
+.chat-message-bubble.mine {
+  background: rgba(37, 99, 235, 0.24);
+  border-color: rgba(37, 99, 235, 0.45);
+}
+
+.chat-message-bubble.other {
+  background: rgba(51, 65, 85, 0.55);
+  border-color: rgba(148, 163, 184, 0.35);
+}
+
+.chat-message-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  margin-bottom: 6px;
+}
+
+.chat-message-bubble p {
+  color: #f1f5f9;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-message-issue {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #93c5fd;
+}
+
+.chat-compose-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--form-input-bg);
+  border: 1px solid var(--form-input-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 90px;
+}
+
 .form-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1520,6 +1629,14 @@ body {
 
   .issue-map {
     height: 260px;
+  }
+
+  .chat-issue-select {
+    min-width: 100%;
+  }
+
+  .chat-message-bubble {
+    max-width: 96%;
   }
 
   .stats-grid {

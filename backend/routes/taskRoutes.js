@@ -198,6 +198,28 @@ router.get("/my-tasks", authMiddleware, workerOrAdmin, async (req, res) => {
   }
 });
 
+// Admin: Get issues assigned to a specific worker (for worker-specific chat issue tagging)
+router.get("/worker/:workerId/issues", authMiddleware, adminOnly, async (req, res) => {
+  try {
+    const { workerId } = req.params;
+
+    const tasks = await Task.find({ workerId })
+      .populate("issueId")
+      .sort({ assignedDate: -1 });
+
+    const uniqueIssueMap = new Map();
+    tasks.forEach((task) => {
+      if (task.issueId?._id) {
+        uniqueIssueMap.set(String(task.issueId._id), task.issueId);
+      }
+    });
+
+    res.json(Array.from(uniqueIssueMap.values()));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Worker: Respond to task (accept/reject)
 router.put("/:taskId/respond", authMiddleware, workerOrAdmin, async (req, res) => {
   try {

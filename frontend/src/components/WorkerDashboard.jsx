@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
+import ChatPanel from "./ChatPanel";
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -121,6 +122,12 @@ export default function WorkerDashboard({ token }) {
           onClick={() => setActiveSection("progress")}
         >
           📊 Progress
+        </button>
+        <button
+          className={`nav-btn ${activeSection === "chat" ? "active" : ""}`}
+          onClick={() => setActiveSection("chat")}
+        >
+          💬 Chat
         </button>
       </nav>
 
@@ -359,6 +366,16 @@ export default function WorkerDashboard({ token }) {
                 </ResponsiveContainer>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeSection === "chat" && (
+          <div className="section">
+            <h2>Worker and Admin Chat</h2>
+            <ChatPanel
+              token={token}
+              issueOptions={myTasks.map((task) => task.issueId).filter(Boolean)}
+            />
           </div>
         )}
       </div>
