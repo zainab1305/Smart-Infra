@@ -306,15 +306,22 @@ function LandingPage() {
               </p>
             </div>
 
-            <div className="footer-col">
+            <div className="footer-col creators-section">
               <h4>Created By</h4>
-              <ul>
-                <li>Yesha Tandel - yeshatandel07@gmail.com</li>
-                <li>Zainab Jambughoda - zainabjambughoda13@gmail.com</li>
-              </ul>
+              <div className="creator-grid">
+                <div className="creator-card">
+                  <h5>Zainab Jambughoda</h5>
+                  <a href="mailto:zainabjambughoda13@gmail.com">zainabjambughoda13@gmail.com</a>
+                </div>
+
+                <div className="creator-card">
+                  <h5>Yesha Tandel</h5>
+                  <a href="mailto:yeshatandel07@gmail.com">yeshatandel07@gmail.com</a>
+                </div>
+              </div>
             </div>
 
-            <div className="footer-col">
+            <div className="footer-col quick-links-col">
               <h4>Quick Links</h4>
               <ul>
                 <li><a href="#features">Features</a></li>

@@ -24,3 +24,4 @@ image-service/venv/
 # Build files
 dist/
 build/
+.venv/

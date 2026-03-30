@@ -272,7 +272,7 @@ export default function UserDashboard({ token }) {
               <div className="location-controls">
                 <button
                   type="button"
-                  className="location-btn"
+                  className="user-action-btn"
                   onClick={handleUseCurrentLocation}
                   disabled={locationLoading}
                 >
@@ -280,7 +280,7 @@ export default function UserDashboard({ token }) {
                 </button>
                 <button
                   type="button"
-                  className="location-btn secondary"
+                  className="user-action-btn"
                   onClick={handleMapSelection}
                   disabled={locationLoading}
                 >
@@ -288,7 +288,7 @@ export default function UserDashboard({ token }) {
                 </button>
                 <button
                   type="button"
-                  className="location-btn ghost"
+                  className="user-action-btn"
                   onClick={() => {
                     setShowMapPicker(false);
                     setLocationError("");
@@ -369,7 +369,7 @@ export default function UserDashboard({ token }) {
               <div className="image-upload-controls">
                 <button
                   type="button"
-                  className="location-btn"
+                  className="user-action-btn"
                   onClick={() => cameraInputRef.current?.click()}
                   disabled={loading}
                 >
@@ -378,7 +378,7 @@ export default function UserDashboard({ token }) {
 
                 <button
                   type="button"
-                  className="location-btn secondary"
+                  className="user-action-btn"
                   onClick={() => uploadInputRef.current?.click()}
                   disabled={loading}
                 >
@@ -394,7 +394,7 @@ export default function UserDashboard({ token }) {
             )}
 
             <div className="form-actions">
-              <button type="submit" disabled={loading}>
+              <button type="submit" className="issue-report-btn" disabled={loading}>
                 {loading ? "Reporting..." : "Report Issue"}
               </button>
 
@@ -425,7 +425,7 @@ export default function UserDashboard({ token }) {
 
           <div className="section-head-row">
             <h2>Your Reported Issues</h2>
-            <button onClick={fetchIssues} disabled={loading} className="refresh-btn">
+            <button onClick={fetchIssues} disabled={loading} className="refresh-btn user-refresh-btn">
               🔄 {loading ? "Refreshing..." : "Refresh"}
             </button>
           </div>
