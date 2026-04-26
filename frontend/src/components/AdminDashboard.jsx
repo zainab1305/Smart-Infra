@@ -300,7 +300,7 @@ export default function AdminDashboard({ token, onLogout }) {
     const generatedAt = new Date(reportData.generatedAt).toLocaleString();
 
     doc.setFontSize(18);
-    doc.text("Smart Infra Work Report", 14, 18);
+    doc.text("UrbanResolve Work Report", 14, 18);
 
     doc.setFontSize(11);
     doc.text(`Duration: ${reportData.duration === "month" ? "Last 30 Days" : "Last 7 Days"}`, 14, 28);
@@ -339,7 +339,7 @@ export default function AdminDashboard({ token, onLogout }) {
       headStyles: { fillColor: [41, 98, 255] },
     });
 
-    doc.save(`smart-infra-${reportData.duration}-report.pdf`);
+    doc.save(`urbanresolve-${reportData.duration}-report.pdf`);
   };
 
   const handlePriorityCardTap = (issue) => {
@@ -427,7 +427,7 @@ export default function AdminDashboard({ token, onLogout }) {
       {/* Sidebar Navigation */}
       <nav className="dashboard-nav">
         <div style={{ padding: "20px 15px", borderBottom: "1px solid rgba(255, 153, 0, 0.1)" }}>
-          <h3 style={{ color: theme === "dark" ? "#ffffff" : "#000000", fontSize: "1rem", fontWeight: "700", marginBottom: "20px" }}>Smart Infra</h3>
+          <h3 style={{ color: theme === "dark" ? "#ffffff" : "#000000", fontSize: "1rem", fontWeight: "700", marginBottom: "20px" }}>UrbanResolve</h3>
         </div>
         <button
           className={`nav-btn ${activeSection === "home" ? "active" : ""}`}

@@ -287,7 +287,7 @@ export default function Login({ onLogin }) {
       </button>
       
       <div className="columns-header">
-        <h1>Smart Infrastructure Dashboard</h1>
+        <h1>UrbanResolve</h1>
         <p>Select your role to login</p>
       </div>
 

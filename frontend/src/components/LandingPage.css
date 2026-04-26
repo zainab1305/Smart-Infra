@@ -280,9 +280,18 @@ body {
 
 .hero-subtitle {
   font-size: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem;
   color: var(--text-tertiary);
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.hero-tagline {
+  font-size: 1.15rem;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: 0.04em;
   transition: color 0.3s ease;
 }
 
@@ -297,7 +306,9 @@ body {
 }
 
 .hero-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: white;
   padding: 1rem 2.5rem;
@@ -306,6 +317,7 @@ body {
   font-weight: 600;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  cursor: pointer;
 }
 
 .hero-btn:hover {
@@ -773,6 +785,10 @@ body {
 .cta-container {
   max-width: 600px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .cta-section h2 {
@@ -783,7 +799,7 @@ body {
   transition: color 0.3s ease;
 }
 
-.cta-section > p {
+.cta-container > p {
   font-size: 1.1rem;
   color: var(--text-secondary);
   margin-bottom: 2rem;

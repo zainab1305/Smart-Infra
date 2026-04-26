@@ -74,7 +74,7 @@ function UserDashboardWrapper({ token, user, onLogout }) {
   return (
     <div className={`app ${user?.role === "worker" || user?.role === "user" ? "with-sidebar" : ""}`}>
       <header className="dashboard-header">
-        <h1>Smart Infrastructure Management</h1>
+        <h1>UrbanResolve Management</h1>
         <div className="header-actions">
           <div className="user-info">
             <span>{user?.role?.toUpperCase()}</span>
@@ -96,7 +96,7 @@ function WorkerDashboardWrapper({ token, user, onLogout }) {
   return (
     <div className="app">
       <header className="dashboard-header">
-        <h1>Smart Infrastructure Management</h1>
+        <h1>UrbanResolve Management</h1>
         <div className="header-actions">
           <div className="user-info">
             <span>{user?.role?.toUpperCase()}</span>

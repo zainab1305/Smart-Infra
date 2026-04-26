@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./LandingPage.css";
 
 function LandingPage() {
@@ -46,12 +45,11 @@ function LandingPage() {
       {/* Navigation */}
       <nav className="landing-nav">
         <div className="nav-container">
-          <div className="nav-logo">Smart Infra</div>
+          <div className="nav-logo">UrbanResolve</div>
           <ul className="nav-links">
             <li><a href="#features">Features</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#services">Services</a></li>
-            <li><a href="#cta" className="nav-btn">Get Started</a></li>
           </ul>
           
           {/* Theme Toggle Switch */}
@@ -82,12 +80,12 @@ function LandingPage() {
         }}></div>
         <div className="hero-overlay"></div>
         <div className="hero-content">
-          <h1 className="hero-title">Smart Infrastructure Dashboard</h1>
-          <p className="hero-subtitle">Smarter Cities Start with Smarter Monitoring</p>
+          <h1 className="hero-title">UrbanResolve</h1>
+          <p className="hero-subtitle">Where Urban Issues Become Actionable Decisions.</p>
+          <p className="hero-tagline">Prioritize. Plan. Resolve.</p>
           <p className="hero-description">
-            Real-time infrastructure monitoring, predictive maintenance, and intelligent resource management
-          </p>
-          <a href="#cta" className="hero-btn">Explore Now</a>
+            A smart infrastructure management system enabling structured reporting, intelligent prioritization, and efficient execution — all in one unified platform.</p>
+          <button type="button" className="hero-btn" onClick={handleCTA}>Start Managing Issues</button>
         </div>
       </section>
 
@@ -140,7 +138,7 @@ function LandingPage() {
           <div className="about-content">
             <div className="about-text">
               <p>
-                Smart Infrastructure Dashboard is designed for modern city management, combining cutting-edge technology 
+                UrbanResolve is designed for modern city management, combining cutting-edge technology 
                 with user-friendly interfaces to ensure optimal infrastructure performance and maintenance.
               </p>
               <p>
@@ -238,7 +236,7 @@ function LandingPage() {
       </section>
 
       {/* Trust Section */}
-      <section className="trust-section">
+      {/* <section className="trust-section">
         <div className="section-container">
           <h2 className="section-title">Trusted by Cities Worldwide</h2>
           <p className="section-subtitle">Join hundreds of organizations improving their infrastructure</p>
@@ -260,9 +258,9 @@ function LandingPage() {
               <div className="trust-number">50+</div>
               <div className="trust-text">Cities Supported</div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="testimonial-section">
+          {/* <div className="testimonial-section">
             <h3>What Our Users Say</h3>
             <div className="testimonials">
               <div className="testimonial">
@@ -280,26 +278,14 @@ function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section id="cta" className="cta-section">
-        <div className="cta-container">
-          <h2>Ready to Transform Your Infrastructure Management?</h2>
-          <p>Join us and experience the future of smart city monitoring</p>
-          
-          <button className="cta-btn" onClick={handleCTA}>Get Started Now</button>
-
-          <p className="form-note">Access your dashboard and start monitoring today</p>
-        </div>
-      </section>
+      </section> */}
 
       {/* Footer */}
       <footer className="footer-section">
         <div className="footer-container">
           <div className="footer-content">
             <div className="footer-col">
-              <h4>About Smart Infrastructure Dashboard</h4>
+              <h4>About UrbanResolve</h4>
               <p>
                 A comprehensive platform for monitoring, managing, and optimizing infrastructure systems 
                 in modern cities. Designed to help municipalities and facility managers work smarter.
@@ -335,7 +321,7 @@ function LandingPage() {
           </div>
 
           <div className="footer-bottom">
-            <p>&copy; 2024 Smart Infrastructure Dashboard. All rights reserved.</p>
+            <p>&copy; 2026 UrbanResolve. All rights reserved.</p>
             <div className="social-links">
               <a href="#">Twitter</a>
               <a href="#">LinkedIn</a>
