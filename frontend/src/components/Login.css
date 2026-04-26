@@ -29,7 +29,7 @@ html, body, #root {
   --accent-primary: #3b82f6;
   --accent-secondary: #8b5cf6;
   --card-bg: rgba(30, 41, 59, 0.85);
-  --gradient-overlay: linear-gradient(135deg, rgba(15, 23, 42, 0.25) 0%, rgba(26, 40, 71, 0.25) 50%, rgba(15, 23, 42, 0.25) 100%);
+  --gradient-overlay: linear-gradient(135deg, rgba(15, 23, 42, 0.08) 0%, rgba(26, 40, 71, 0.08) 50%, rgba(15, 23, 42, 0.08) 100%);
   --input-bg: rgba(30, 41, 59, 0.6);
   --input-border: rgba(59, 130, 246, 0.3);
   --input-focus-border: rgba(59, 130, 246, 0.8);
@@ -47,7 +47,7 @@ html, body, #root {
   --accent-primary: #1E3A5F;
   --accent-secondary: #3b82f6;
   --card-bg: rgba(255, 251, 243, 0.95);
-  --gradient-overlay: linear-gradient(135deg, rgba(245, 240, 232, 0.25) 0%, rgba(232, 224, 213, 0.25) 50%, rgba(254, 251, 243, 0.25) 100%);
+  --gradient-overlay: linear-gradient(135deg, rgba(245, 240, 232, 0.08) 0%, rgba(232, 224, 213, 0.08) 50%, rgba(254, 251, 243, 0.08) 100%);
   --input-bg: rgba(255, 248, 240, 0.8);
   --input-border: #D4C4B0;
   --input-focus-border: #1E3A5F;
@@ -91,7 +91,7 @@ body {
   width: 100%;
   height: 100%;
   background: var(--gradient-overlay);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(0px);
   pointer-events: none;
   z-index: 0;
   transition: all 0.3s ease;
