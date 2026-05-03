@@ -8,8 +8,6 @@ const taskRoutes = require("./routes/taskRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 
 dotenv.config();
-connectDB();
-console.log("SERVER FILE LOADED");
 
 const app = express();
 app.use(cors());
@@ -27,7 +25,15 @@ app.get("/", (req, res) => {
   res.send("Backend running");
 });
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 5000;
+
+const startServer = async () => {
+  await connectDB();
+  console.log("SERVER FILE LOADED");
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
