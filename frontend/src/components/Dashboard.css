@@ -1988,12 +1988,14 @@ body {
 }
 
 .recharts-text {
-  fill: #000000 !important;
+  fill: var(--text-primary) !important;
   font-size: 0.75rem !important;
 }
 
-.recharts-cartesian-axis-tick {
-  fill: #000000 !important;
+.recharts-cartesian-axis-tick,
+.recharts-cartesian-axis-tick tspan,
+svg text {
+  fill: var(--text-primary) !important;
 }
 
 /* ============================================================================

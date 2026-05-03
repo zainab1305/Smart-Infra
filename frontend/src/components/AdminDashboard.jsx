@@ -551,8 +551,15 @@ export default function AdminDashboard({ token, onLogout }) {
                       animationDuration={1200}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 153, 0, 0.1)" />
-                      <XAxis dataKey="day" stroke={theme === "dark" ? "#94a3b8" : "#000000"} />
-                      <YAxis stroke={theme === "dark" ? "#94a3b8" : "#000000"} />
+                      <XAxis
+                        dataKey="day"
+                        stroke={theme === "dark" ? "#94a3b8" : "#000000"}
+                        tick={{ fill: theme === "dark" ? "#ffffff" : "#000000" }}
+                      />
+                      <YAxis
+                        stroke={theme === "dark" ? "#94a3b8" : "#000000"}
+                        tick={{ fill: theme === "dark" ? "#ffffff" : "#000000" }}
+                      />
                       <Tooltip 
                         contentStyle={{
                           background: "rgba(15, 23, 42, 0.9)",
@@ -561,14 +568,11 @@ export default function AdminDashboard({ token, onLogout }) {
                           color: "#fff"
                         }}
                       />
-                      <Legend 
-                        wrapperStyle={{ 
-                          color: theme === "dark" ? "#ffffff" : "#000000",
-                          paddingTop: "10px"
-                        }}
-                        contentStyle={{ 
-                          color: theme === "dark" ? "#ffffff" : "#000000"
-                        }}
+                      <Legend
+                        wrapperStyle={{ paddingTop: "10px" }}
+                        formatter={(value) => (
+                          <span style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}>{value}</span>
+                        )}
                       />
                       <Line 
                         type="natural"
