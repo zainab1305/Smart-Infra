@@ -16,9 +16,9 @@
 
 :root {
   /* Dark Theme (Default) */
-  --bg-primary: #050816;
-  --bg-secondary: #0d1730;
-  --bg-tertiary: #101a3a;
+  --bg-primary: #0f172a;
+  --bg-secondary: #1a2847;
+  --bg-tertiary: #1a1f3a;
   --text-primary: #ffffff;
   --text-secondary: #cbd5e1;
   --text-tertiary: #93c5fd;
@@ -26,21 +26,17 @@
   --accent-primary: #3b82f6;
   --accent-secondary: #8b5cf6;
   --card-bg: rgba(30, 41, 59, 0.7);
-  --nav-bg: transparent;
-  --gradient-overlay: radial-gradient(circle at 88% 88%, rgba(18, 102, 255, 0.22) 0%, rgba(6, 24, 67, 0.08) 34%, rgba(2, 8, 24, 0) 62%);
+  --nav-bg: linear-gradient(180deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
+  --gradient-overlay: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(26, 40, 71, 0.95) 50%, rgba(15, 23, 42, 0.95) 100%);
   --form-input-bg: rgba(10, 10, 10, 0.8);
   --form-input-border: rgba(59, 130, 246, 0.3);
-  --bg-gradient:
-    radial-gradient(circle at 14% 18%, rgba(60, 130, 255, 0.52) 0%, rgba(20, 70, 185, 0.34) 12%, rgba(7, 24, 70, 0.12) 28%, rgba(1, 4, 14, 0) 52%),
-    radial-gradient(circle at 88% 88%, rgba(18, 102, 255, 0.98) 0%, rgba(18, 102, 255, 0.9) 10%, rgba(9, 48, 138, 0.78) 22%, rgba(4, 14, 36, 0.94) 38%, rgba(1, 4, 14, 1) 62%),
-    radial-gradient(circle at 20% 12%, rgba(4, 10, 24, 0.98) 0%, rgba(4, 10, 24, 0.82) 16%, rgba(4, 10, 24, 0.55) 30%, transparent 56%);
 }
 
 /* Light Theme */
 [data-theme="light"] {
-  --bg-primary: #f7fbff;
-  --bg-secondary: #eef6ff;
-  --bg-tertiary: #e4f0ff;
+  --bg-primary: #FEFBF3;
+  --bg-secondary: #F5F0E8;
+  --bg-tertiary: #E8E0D5;
   --text-primary: #1A1410;
   --text-secondary: #5A4A40;
   --text-tertiary: #8B7355;
@@ -48,14 +44,10 @@
   --accent-primary: #1E3A5F;
   --accent-secondary: #3b82f6;
   --card-bg: rgba(255, 251, 243, 0.85);
-  --nav-bg: transparent;
-  --gradient-overlay: radial-gradient(circle at 88% 88%, rgba(91, 155, 255, 0.22) 0%, rgba(91, 155, 255, 0.10) 30%, rgba(255, 255, 255, 0) 64%);
+  --nav-bg: linear-gradient(180deg, rgba(245, 240, 232, 0.75) 0%, rgba(238, 233, 226, 0.85) 100%);
+  --gradient-overlay: linear-gradient(135deg, rgba(245, 240, 232, 0.95) 0%, rgba(232, 224, 213, 0.95) 50%, rgba(254, 251, 243, 0.95) 100%);
   --form-input-bg: #ffffff;
   --form-input-border: #D4C4B0;
-  --bg-gradient:
-    radial-gradient(circle at 14% 18%, rgba(120, 176, 255, 0.34) 0%, rgba(180, 214, 255, 0.24) 14%, rgba(226, 240, 255, 0.10) 30%, rgba(255, 255, 255, 0) 54%),
-    radial-gradient(circle at 88% 88%, rgba(255, 255, 255, 0.99) 0%, rgba(233, 244, 255, 0.98) 12%, rgba(182, 216, 255, 0.86) 24%, rgba(129, 179, 255, 0.6) 38%, rgba(248, 251, 255, 0.96) 58%, rgba(255, 255, 255, 1) 76%),
-    radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.99) 0%, rgba(255, 255, 255, 0.9) 14%, rgba(224, 238, 255, 0.5) 28%, transparent 52%);
 }
 
 /* ============================================================================
@@ -66,6 +58,12 @@
   from {
     opacity: 0;
     transform: translateY(20px);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
@@ -73,16 +71,16 @@
   }
 }
 
-@keyframes fillAnimation {
-  from {
-    opacity: 0;
-    stroke-dashoffset: 100%;
+/* ============================================================================
+   USER DASHBOARD NAVIGATION - VERTICAL LEFT SIDEBAR
+   ============================================================================ */
+
+@keyframes shimmer {
   }
-  to {
-    opacity: 1;
-    stroke-dashoffset: 0;
-  }
-}
+
+  /* ============================================================================
+     USER DASHBOARD NAVIGATION - VERTICAL LEFT SIDEBAR
+     ============================================================================ */
 
 @keyframes shimmer {
   0%, 100% {
@@ -98,86 +96,80 @@
     opacity: 0;
     transform: translateY(-10px);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dashboard {
-  min-height: 100vh;
-  background-color: var(--bg-primary);
-  background-image: var(--bg-gradient);
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-blend-mode: normal;
-  color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
-  transition: background-color 0.3s ease, background-image 0.3s ease;
-  overflow-x: hidden;
-}
-
-.dashboard::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--gradient-overlay);
-  pointer-events: none;
-  z-index: 0;
-  transition: all 0.3s ease;
-}
-
-.dashboard:has(.dashboard-nav) {
-  grid-template-columns: 200px 1fr;
-}
-
 /* ============================================================================
-   ADMIN DASHBOARD - FORCE THEME TEXT COLORS
-   Ensures admin area uses primary text color per theme (white in dark,
-   black in light). This scope targets the admin-dashboard wrapper added
-   in the component to avoid changing other dashboards.
+   USER DASHBOARD NAVIGATION - VERTICAL LEFT SIDEBAR
    ============================================================================ */
-.admin-dashboard {
+
+.user-dashboard-nav {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border-right: 1px solid var(--border-color);
+  padding: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 200px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  padding-top: 20px;
+}
+
+.nav-tab {
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.nav-tab:hover {
   color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.1);
+  border-left-color: var(--accent-primary);
 }
 
-.admin-dashboard h1,
-.admin-dashboard h2,
-.admin-dashboard h3,
-.admin-dashboard h4,
-.admin-dashboard p,
-.admin-dashboard span,
-.admin-dashboard label,
-.admin-dashboard a,
-.admin-dashboard td,
-.admin-dashboard th,
-.admin-dashboard .nav-tab,
-.admin-dashboard .nav-btn,
-.admin-dashboard .component-section h3,
-.admin-dashboard .section h2 {
-  color: var(--text-primary) !important;
+.nav-tab.active {
+  color: var(--accent-primary);
+  border-left-color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.05);
 }
 
-.admin-dashboard .status-badge,
-.admin-dashboard .issue-card h4,
-.admin-dashboard .task-card h4,
-.admin-dashboard .worker-card h4 {
-  /* Keep status and card accents readable by preserving their explicit colors */
+/* Adjust dashboard layout to accommodate left sidebar */
+.user-dashboard-wrapper {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: 1fr;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.user-dashboard-wrapper .dashboard {
+  grid-column: 2;
+  grid-row: 1;
+  margin-left: 0;
+}
+
+.user-dashboard-wrapper .user-dashboard-nav {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  height: auto;
+  width: auto;
 }
 
 /* ============================================================================
@@ -191,58 +183,58 @@ body {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: var(--card-bg);
-  border: 1px solid var(--accent-primary);
-  color: var(--text-primary);
-  font-size: 1.3rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
+    --form-input-border: #D4C4B0;
+  }
 
-.theme-toggle-dashboard:hover {
-  transform: scale(1.1);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  border-color: var(--accent-secondary);
-}
+  /* ============================================================================
+     ANIMATIONS
+     ============================================================================ */
 
-/* ============================================================================
-   LEFT SIDEBAR - TRANSPARENT EFFECT
-   ============================================================================ */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 
-.dashboard-nav {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 200px;
-  height: 100vh;
-  background: var(--nav-bg);
-  border-right: 1px solid var(--border-color);
-  backdrop-filter: blur(20px);
-  padding: 40px 0 0 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  z-index: 50;
-  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-}
+  @keyframes fillAnimation {
+    from {
+      opacity: 0;
+      stroke-dashoffset: 100%;
+    }
+    to {
+      opacity: 1;
+      stroke-dashoffset: 0;
+    }
+  }
 
-.dashboard-nav::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 200px;
-  height: 100%;
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.02) 100%);
-  pointer-events: none;
+  @keyframes shimmer {
+    0%, 100% {
+      background-position: -2000px 0;
+    }
+    100% {
+      background-position: calc(2000px + 100%) 0;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================================================================
+     USER DASHBOARD NAVIGATION - VERTICAL LEFT SIDEBAR
+     ============================================================================ */
 }
 
 .nav-btn {
@@ -308,54 +300,54 @@ body {
   align-items: center;
   gap: 8px;
 }
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  backdrop-filter: blur(10px);
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.user-info span {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  font-weight: 500;
+@keyframes fillAnimation {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 100%;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
 }
 
-.logout-btn {
-  padding: 6px 12px;
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-  color: var(--text-primary);
-  border: none;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+@keyframes shimmer {
+  0%, 100% {
+    background-position: -2000px 0;
+  }
+  100% {
+    background-position: calc(2000px + 100%) 0;
+  }
 }
 
-.logout-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============================================================================
-   DASHBOARD CONTENT
-   ============================================================================ */
-
-.dashboard-content {
-  grid-column: 1;
-  grid-row: 2;
-  padding: 20px 25px;
-  width: 100%;
-  max-width: 100%;
-  overflow-y: auto;
-  background: transparent !important;
+   USER DASHBOARD NAVIGATION - VERTICAL LEFT SIDEBAR
   margin: 0;
   position: relative;
   z-index: 10;
@@ -521,6 +513,170 @@ body {
   align-items: center;
   justify-content: center;
   margin-top: 4px;
+}
+
+/* ============================================================================
+   USER DASHBOARD NAVIGATION
+   ============================================================================ */
+
+.user-dashboard-nav {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-tab {
+  flex: 1;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  text-align: center;
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.nav-tab.active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+/* ============================================================================
+   DROPDOWN SECTION STYLING
+   ============================================================================ */
+
+.dropdown-section {
+  margin-bottom: 16px;
+}
+
+.dropdown-section label {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-section select,
+.form select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--form-input-bg);
+  border: 1px solid var(--form-input-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dropdown-section select:hover,
+.form select:hover {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(30, 41, 59, 0.8);
+}
+
+.dropdown-section select:focus,
+.form select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: rgba(30, 41, 59, 0.9);
+}
+
+.dropdown-section select option {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .dropdown-section select option {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* ============================================================================
+   RECHARTS LEGEND STYLING - Theme-aware text color
+   ============================================================================ */
+
+/* Global SVG text styling for recharts */
+svg text {
+  fill: var(--text-primary) !important;
+}
+
+svg tspan {
+  fill: var(--text-primary) !important;
+}
+
+.recharts-legend-wrapper {
+  color: var(--text-primary) !important;
+}
+
+.recharts-legend-wrapper text,
+.recharts-legend-item text,
+.recharts-legend-item-text {
+  fill: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+}
+
+/* Ensure SVG text elements have correct fill */
+svg .recharts-legend-item-text {
+  fill: var(--text-primary) !important;
+}
+
+/* Dark theme - white text for all SVG elements */
+[data-theme="dark"] svg text,
+[data-theme="dark"] svg tspan {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .recharts-legend-wrapper,
+[data-theme="dark"] .recharts-legend-wrapper text,
+[data-theme="dark"] .recharts-legend-item text,
+[data-theme="dark"] .recharts-legend-item-text,
+[data-theme="dark"] svg .recharts-legend-item-text {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  stroke: none !important;
+}
+
+/* Light theme - black text for all SVG elements */
+[data-theme="light"] svg text,
+[data-theme="light"] svg tspan {
+  fill: #000000 !important;
+  color: #000000 !important;
+}
+
+[data-theme="light"] .recharts-legend-wrapper,
+[data-theme="light"] .recharts-legend-wrapper text,
+[data-theme="light"] .recharts-legend-item text,
+[data-theme="light"] .recharts-legend-item-text,
+[data-theme="light"] svg .recharts-legend-item-text {
+  fill: #000000 !important;
+  color: #000000 !important;
+  stroke: none !important;
 }
 
 /* ============================================================================
@@ -742,14 +898,13 @@ body {
    ============================================================================ */
 
 .issue-card {
-  background: rgba(59, 130, 246, 0.12);
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: 12px;
-  padding: 12px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 6px;
+  padding: 6px;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: none;
   position: relative;
   overflow: hidden;
 }
@@ -775,13 +930,13 @@ body {
   font-weight: 400;
 }
 
-.issue-card-image {
+.issue-card img {
   width: 100%;
-  height: 180px;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  height: auto;
+  max-height: 100px;
+  border-radius: 4px;
+  margin-top: 4px;
   object-fit: cover;
-  transition: all 0.3s ease;
 }
 
 .task-card,
@@ -810,10 +965,10 @@ body {
 }
 
 .issue-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-  background: rgba(59, 130, 246, 0.18);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
 }
 
 .task-card:hover,
@@ -878,14 +1033,14 @@ body {
 
 /* Resolved - Green */
 .issue-card:has(.status-Resolved) {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.25);
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.2);
 }
 
 .issue-card:has(.status-Resolved):hover {
   border-color: rgba(34, 197, 94, 0.4);
-  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-  background: rgba(34, 197, 94, 0.18);
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.15);
+  background: rgba(34, 197, 94, 0.15);
 }
 
 .issue-card:has(.status-Resolved) h4 {
@@ -894,14 +1049,14 @@ body {
 
 /* Assigned - Blue */
 .issue-card:has(.status-Assigned) {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25);
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
 .issue-card:has(.status-Assigned):hover {
   border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-  background: rgba(59, 130, 246, 0.18);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
 }
 
 .issue-card:has(.status-Assigned) h4 {
@@ -910,14 +1065,14 @@ body {
 
 /* Rejected - Red */
 .issue-card:has(.status-Rejected) {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .issue-card:has(.status-Rejected):hover {
   border-color: rgba(239, 68, 68, 0.4);
-  box-shadow: 0 12px 32px rgba(239, 68, 68, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-  background: rgba(239, 68, 68, 0.18);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.15);
 }
 
 .issue-card:has(.status-Rejected) h4 {
@@ -926,14 +1081,14 @@ body {
 
 /* Reported - Orange (default blue for other statuses) */
 .issue-card:has(.status-Reported) {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25);
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
 .issue-card:has(.status-Reported):hover {
   border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.25), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-  background: rgba(59, 130, 246, 0.18);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.15);
 }
 
 /* ============================================================================
@@ -1145,11 +1300,20 @@ body {
   padding: 12px;
   margin-bottom: 15px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  box-shadow: none;
-  backdrop-filter: none;
-}
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================================================================
+     USER DASHBOARD NAVIGATION - VERTICAL LEFT SIDEBAR
+     ============================================================================ */
 
 .form h3 {
   margin-bottom: 10px;
@@ -2388,172 +2552,4 @@ body {
     grid-template-columns: 1fr;
   }
 }
-
-  /* ============================================================================
-     USER DASHBOARD - VERTICAL SIDEBAR LAYOUT
-     ============================================================================ */
-
-  .user-dashboard-wrapper {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  .user-dashboard-nav {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 210px;
-    height: 100vh;
-    background: var(--nav-bg);
-    border-right: 1px solid var(--border-color);
-    backdrop-filter: blur(18px) saturate(120%);
-    -webkit-backdrop-filter: blur(18px) saturate(120%);
-    padding: 20px 0;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    z-index: 100;
-    box-shadow: none;
-  }
-
-  .nav-tabs {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding: 0;
-    flex: 1;
-  }
-
-  .nav-tab {
-    padding: 16px 20px;
-    cursor: pointer;
-    border-left: 4px solid transparent;
-    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    background: transparent;
-    border: none;
-    text-align: left;
-    white-space: nowrap;
-    width: 100%;
-  }
-
-  .nav-tab:hover {
-    background-color: rgba(59, 130, 246, 0.1);
-    color: var(--text-primary);
-    border-left-color: var(--accent-primary);
-  }
-
-  .nav-tab.active {
-    border-left: 4px solid var(--accent-primary);
-    background-color: rgba(59, 130, 246, 0.15);
-    color: var(--accent-primary);
-  }
-
-  .dashboard-content {
-    margin-left: 200px;
-    width: calc(100% - 200px);
-    min-height: 100vh;
-    padding: 20px;
-    background: var(--bg-primary);
-    position: relative;
-    z-index: 1;
-  }
-
-  .dropdown-section {
-    margin: 15px 0;
-  }
-
-  .dropdown-section label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-
-  .dropdown-section select {
-    width: 100%;
-    padding: 10px 12px;
-    background-color: var(--form-input-bg);
-    border: 1px solid var(--form-input-border);
-    border-radius: 6px;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: inherit;
-  }
-
-  .dropdown-section select:hover {
-    border-color: var(--accent-primary);
-  }
-
-  .dropdown-section select:focus {
-    outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    background-color: rgba(59, 130, 246, 0.05);
-  }
-
-  .dropdown-section select option {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-  }
-
-  [data-theme="light"] .dropdown-section select option {
-    background-color: #ffffff;
-    color: #1a1410;
-  }
-
-  @media (max-width: 768px) {
-    .user-dashboard-nav {
-      position: relative;
-      width: 100%;
-      height: auto;
-      flex-direction: row;
-      border-right: none;
-      border-bottom: 1px solid var(--border-color);
-      padding: 10px;
-      flex-wrap: wrap;
-      box-shadow: none;
-    }
-
-    .nav-tabs {
-      display: flex;
-      flex-direction: row;
-      gap: 8px;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-
-    .nav-tab {
-      padding: 10px 12px;
-      border-left: none;
-      border-bottom: none;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      font-size: 0.85rem;
-      white-space: normal;
-      flex: 1;
-      min-width: 120px;
-    }
-
-    .nav-tab:hover {
-      border-color: var(--accent-primary);
-    }
-
-    .nav-tab.active {
-      border-left: none;
-      border-color: var(--accent-primary);
-    }
-
-    .dashboard-content {
-      margin-left: 0;
-      width: 100%;
-      padding: 10px;
-    }
-  }
 

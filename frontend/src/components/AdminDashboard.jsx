@@ -415,7 +415,7 @@ export default function AdminDashboard({ token, onLogout }) {
   });
 
   return (
-    <div className="dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
+    <div className="dashboard admin-dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
       <button 
         className="theme-toggle-dashboard" 
         onClick={toggleTheme} 
@@ -561,7 +561,15 @@ export default function AdminDashboard({ token, onLogout }) {
                           color: "#fff"
                         }}
                       />
-                      <Legend />
+                      <Legend 
+                        wrapperStyle={{ 
+                          color: theme === "dark" ? "#ffffff" : "#000000",
+                          paddingTop: "10px"
+                        }}
+                        contentStyle={{ 
+                          color: theme === "dark" ? "#ffffff" : "#000000"
+                        }}
+                      />
                       <Line 
                         type="natural"
                         dataKey="Reported" 

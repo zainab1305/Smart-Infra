@@ -10,16 +10,18 @@ const CATEGORIES = [
   "Others",
 ];
 
-export default function IssueReport() {
+export default function IssueReport({ token }) {
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
   const [image, setImage] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const submitIssue = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     const formData = new FormData();
     formData.append("category", category);
@@ -31,13 +33,19 @@ export default function IssueReport() {
         "http://localhost:5000/api/issues",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { 
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`
+          },
         }
       );
 
       setResult(res.data);
+      setCategory("");
+      setLocation("");
+      setImage(null);
     } catch (err) {
-      alert("Failed to submit issue");
+      setError(err.response?.data?.message || "Failed to submit issue");
       console.error(err);
     } finally {
       setLoading(false);
@@ -53,6 +61,12 @@ export default function IssueReport() {
         </p>
 
         <form onSubmit={submitIssue}>
+          {error && (
+            <div className="error-message" style={{ color: "#ef4444", marginBottom: "16px", padding: "12px", backgroundColor: "rgba(239, 68, 68, 0.1)", borderRadius: "8px" }}>
+              {error}
+            </div>
+          )}
+          
           <div className="field">
             <label>Issue Category</label>
             <select
