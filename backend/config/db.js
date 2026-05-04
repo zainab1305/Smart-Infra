@@ -13,12 +13,15 @@ const connectDB = async () => {
       return;
     } catch (error) {
       console.warn(`MongoDB connection failed for configured URI: ${error.message}`);
+      if (error.code) console.warn(`Code: ${error.code}`);
+      console.warn("Falling back to in-memory MongoDB server.");
     }
   } else {
     console.warn("No MongoDB URI configured; starting in-memory MongoDB.");
   }
 
   try {
+    // Start an in-memory MongoDB instance as a fallback so the app can run
     inMemoryMongoServer = await MongoMemoryServer.create({
       instance: {
         dbName: "smart-infra",
@@ -29,7 +32,8 @@ const connectDB = async () => {
     await mongoose.connect(inMemoryMongoServer.getUri());
     console.log("MongoDB connected using in-memory server");
   } catch (error) {
-    console.error(`Failed to start in-memory MongoDB: ${error.message}`);
+    console.error("Failed to start in-memory MongoDB:", error.message);
+    if (error.stack) console.error(error.stack);
     process.exit(1);
   }
 };

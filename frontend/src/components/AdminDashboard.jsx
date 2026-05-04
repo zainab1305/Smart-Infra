@@ -415,7 +415,7 @@ export default function AdminDashboard({ token, onLogout }) {
   });
 
   return (
-    <div className="dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
+    <div className="dashboard admin-dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
       <button 
         className="theme-toggle-dashboard" 
         onClick={toggleTheme} 
@@ -551,8 +551,15 @@ export default function AdminDashboard({ token, onLogout }) {
                       animationDuration={1200}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 153, 0, 0.1)" />
-                      <XAxis dataKey="day" stroke={theme === "dark" ? "#94a3b8" : "#000000"} />
-                      <YAxis stroke={theme === "dark" ? "#94a3b8" : "#000000"} />
+                      <XAxis
+                        dataKey="day"
+                        stroke={theme === "dark" ? "#94a3b8" : "#000000"}
+                        tick={{ fill: theme === "dark" ? "#ffffff" : "#000000" }}
+                      />
+                      <YAxis
+                        stroke={theme === "dark" ? "#94a3b8" : "#000000"}
+                        tick={{ fill: theme === "dark" ? "#ffffff" : "#000000" }}
+                      />
                       <Tooltip 
                         contentStyle={{
                           background: "rgba(15, 23, 42, 0.9)",
@@ -561,7 +568,12 @@ export default function AdminDashboard({ token, onLogout }) {
                           color: "#fff"
                         }}
                       />
-                      <Legend />
+                      <Legend
+                        wrapperStyle={{ paddingTop: "10px" }}
+                        formatter={(value) => (
+                          <span style={{ color: theme === "dark" ? "#ffffff" : "#000000" }}>{value}</span>
+                        )}
+                      />
                       <Line 
                         type="natural"
                         dataKey="Reported" 

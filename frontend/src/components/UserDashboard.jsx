@@ -28,6 +28,7 @@ function MapClickHandler({ onSelect }) {
 
 export default function UserDashboard({ token }) {
   const [theme, setTheme] = useState("dark");
+  const [activeTab, setActiveTab] = useState("report");
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -35,6 +36,8 @@ export default function UserDashboard({ token }) {
   const [locationLoading, setLocationLoading] = useState(false);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [imageSource, setImageSource] = useState("");
+  const [locationMethod, setLocationMethod] = useState("manual");
+  const [imageMethod, setImageMethod] = useState("");
   const [newIssue, setNewIssue] = useState({
     category: "Road Damage",
     location: "",
@@ -144,6 +147,7 @@ export default function UserDashboard({ token }) {
         const latitude = Number(position.coords.latitude.toFixed(6));
         const longitude = Number(position.coords.longitude.toFixed(6));
         await applySelectedLocation(latitude, longitude);
+        setLocationMethod("current");
       },
       (geoError) => {
         setLocationLoading(false);
@@ -156,6 +160,7 @@ export default function UserDashboard({ token }) {
   const handleMapSelection = () => {
     setShowMapPicker(true);
     setLocationError("");
+    setLocationMethod("map");
   };
 
   const handleManualLocationChange = (value) => {
@@ -210,6 +215,8 @@ export default function UserDashboard({ token }) {
       });
       setImageFile(null);
       setImageSource("");
+      setImageMethod("");
+      setLocationMethod("manual");
       setShowMapPicker(false);
       setLocationError("");
       fetchIssues();
@@ -234,7 +241,7 @@ export default function UserDashboard({ token }) {
   };
 
   return (
-    <div className="dashboard" style={{ backgroundImage: `url('${theme === "dark" ? BG_DARK : BG_LIGHT}')` }}>
+    <div className="dashboard">
       <button 
         className="theme-toggle-dashboard" 
         onClick={toggleTheme} 
@@ -243,106 +250,142 @@ export default function UserDashboard({ token }) {
       >
         {theme === 'dark' ? '☀️' : '🌙'}
       </button>
+
+      {/* Navigation Bar */}
+      <nav className="user-dashboard-nav">
+        <div className="nav-tabs">
+          <button
+            className={`nav-tab ${activeTab === "report" ? "active" : ""}`}
+            onClick={() => setActiveTab("report")}
+          >
+            📋 Report Issue
+          </button>
+          <button
+            className={`nav-tab ${activeTab === "issues" ? "active" : ""}`}
+            onClick={() => setActiveTab("issues")}
+          >
+            📁 Your Reported Issues
+          </button>
+        </div>
+      </nav>
+
       <div className="dashboard-content">
-        <div className="section">
-          <h2>Report Infrastructure Issues</h2>
+        {/* Report Issue Section */}
+        {activeTab === "report" && (
+          <div className="section">
+            <h2>Report Infrastructure Issues</h2>
 
-          <form onSubmit={handleReportIssue} className="form">
-            <select
-              value={newIssue.category}
-              onChange={(e) => setNewIssue({ ...newIssue, category: e.target.value })}
-              required
-            >
-              <option value="Road Damage">Road Damage</option>
-              <option value="Water Leakage">Water Leakage</option>
-              <option value="Street Light">Street Light</option>
-              <option value="Garbage">Garbage</option>
-              <option value="Others">Others</option>
-            </select>
+            <form onSubmit={handleReportIssue} className="form">
+              <select
+                value={newIssue.category}
+                onChange={(e) => setNewIssue({ ...newIssue, category: e.target.value })}
+                required
+              >
+                <option value="Road Damage">Road Damage</option>
+                <option value="Water Leakage">Water Leakage</option>
+                <option value="Street Light">Street Light</option>
+                <option value="Garbage">Garbage</option>
+                <option value="Others">Others</option>
+              </select>
 
-            <input
-              type="text"
-              placeholder="Enter address manually"
-              value={newIssue.location}
-              onChange={(e) => handleManualLocationChange(e.target.value)}
-              required
-            />
-
-            <div className="location-field-wrapper">
-              <div className="location-controls">
-                <button
-                  type="button"
-                  className="user-action-btn"
-                  onClick={handleUseCurrentLocation}
-                  disabled={locationLoading}
-                >
-                  {locationLoading ? "Detecting..." : "Use Current Location"}
-                </button>
-                <button
-                  type="button"
-                  className="user-action-btn"
-                  onClick={handleMapSelection}
-                  disabled={locationLoading}
-                >
-                  Select on Map
-                </button>
-                <button
-                  type="button"
-                  className="user-action-btn"
-                  onClick={() => {
-                    setShowMapPicker(false);
+              {/* Location Selection Dropdown */}
+              <div className="dropdown-section">
+                <label>Choose Location Method</label>
+                <select
+                  value={locationMethod}
+                  onChange={(e) => {
+                    const method = e.target.value;
+                    setLocationMethod(method);
                     setLocationError("");
+                    if (method === "current") {
+                      handleUseCurrentLocation();
+                    } else if (method === "map") {
+                      handleMapSelection();
+                    }
                   }}
-                  disabled={locationLoading}
+                  required
                 >
-                  Manual Entry
-                </button>
+                  <option value="manual">Manual Entry</option>
+                  <option value="current">Use Current Location</option>
+                  <option value="map">Select on Map</option>
+                </select>
               </div>
-            </div>
 
-            {showMapPicker && (
-              <div className="map-picker-wrapper">
-                <MapContainer
-                  center={[markerPosition.lat, markerPosition.lng]}
-                  zoom={13}
-                  className="issue-map"
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <MapClickHandler onSelect={applySelectedLocation} />
-                  <Marker
-                    position={[markerPosition.lat, markerPosition.lng]}
-                    draggable
-                    eventHandlers={{
-                      dragend: (event) => {
-                        const marker = event.target;
-                        const position = marker.getLatLng();
-                        const latitude = Number(position.lat.toFixed(6));
-                        const longitude = Number(position.lng.toFixed(6));
-                        applySelectedLocation(latitude, longitude);
-                      },
-                    }}
+              {/* Location Input
+              {locationMethod === "manual" && (
+                <input
+                  type="text"
+                  placeholder="Enter address manually"
+                  value={newIssue.location}
+                  onChange={(e) => handleManualLocationChange(e.target.value)}
+                  required
+                />
+              )} */}
+
+              {showMapPicker && (
+                <div className="map-picker-wrapper">
+                  <MapContainer
+                    center={[markerPosition.lat, markerPosition.lng]}
+                    zoom={13}
+                    className="issue-map"
                   >
-                  </Marker>
-                </MapContainer>
-                <p className="location-help-text">Click anywhere on map or drag marker to choose location.</p>
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <MapClickHandler onSelect={applySelectedLocation} />
+                    <Marker
+                      position={[markerPosition.lat, markerPosition.lng]}
+                      draggable
+                      eventHandlers={{
+                        dragend: (event) => {
+                          const marker = event.target;
+                          const position = marker.getLatLng();
+                          const latitude = Number(position.lat.toFixed(6));
+                          const longitude = Number(position.lng.toFixed(6));
+                          applySelectedLocation(latitude, longitude);
+                        },
+                      }}
+                    >
+                    </Marker>
+                  </MapContainer>
+                  <p className="location-help-text">Click anywhere on map or drag marker to choose location.</p>
+                </div>
+              )}
+
+              {(newIssue.latitude !== null || newIssue.longitude !== null) && (
+                <div className="selected-location-box">
+                  <p><strong>Selected Address:</strong> {newIssue.address || newIssue.location}</p>
+                  <p>
+                    <strong>Coordinates:</strong> {newIssue.latitude ?? "-"}, {newIssue.longitude ?? "-"}
+                  </p>
+                </div>
+              )}
+
+              {locationError && <div className="error-message">{locationError}</div>}
+
+              {/* Image Selection Dropdown */}
+              <div className="dropdown-section">
+                <label>Add Image</label>
+                <select
+                  value={imageMethod}
+                  onChange={(e) => {
+                    const method = e.target.value;
+                    setImageMethod(method);
+                    if (method === "upload") {
+                      uploadInputRef.current?.click();
+                    } else if (method === "camera") {
+                      cameraInputRef.current?.click();
+                    }
+                  }}
+                >
+                  <option value="">Select image source</option>
+                  <option value="upload">Upload from Device</option>
+                  <option value="camera">Capture from Camera</option>
+                </select>
               </div>
-            )}
 
-            {(newIssue.latitude !== null || newIssue.longitude !== null) && (
-              <div className="selected-location-box">
-                <p><strong>Selected Address:</strong> {newIssue.address || newIssue.location}</p>
-                <p>
-                  <strong>Coordinates:</strong> {newIssue.latitude ?? "-"}, {newIssue.longitude ?? "-"}
-                </p>
-              </div>
-            )}
-
-            {locationError && <div className="error-message">{locationError}</div>}
-
-            <div className="image-field-wrapper">
+              {/* Hidden file inputs */}
               <input
                 ref={cameraInputRef}
                 type="file"
@@ -351,6 +394,7 @@ export default function UserDashboard({ token }) {
                 onChange={(e) => {
                   handleImageSelection(e.target.files?.[0], "Camera");
                   e.target.value = "";
+                  setImageMethod("");
                 }}
                 style={{ display: "none" }}
               />
@@ -362,114 +406,94 @@ export default function UserDashboard({ token }) {
                 onChange={(e) => {
                   handleImageSelection(e.target.files?.[0], "Device");
                   e.target.value = "";
+                  setImageMethod("");
                 }}
                 style={{ display: "none" }}
               />
 
-              <div className="image-upload-controls">
-                <button
-                  type="button"
-                  className="user-action-btn"
-                  onClick={() => cameraInputRef.current?.click()}
-                  disabled={loading}
-                >
-                  Capture from Camera
+              {imageFile && (
+                <p className="location-help-text">
+                  Selected image ({imageSource || "File"}): {imageFile.name}
+                </p>
+              )}
+
+              <div className="form-actions">
+                <button type="submit" className="issue-report-btn" disabled={loading}>
+                  {loading ? "Reporting..." : "Report Issue"}
                 </button>
 
                 <button
                   type="button"
-                  className="user-action-btn"
-                  onClick={() => uploadInputRef.current?.click()}
+                  className="form-reset-btn"
+                  onClick={() => {
+                    setNewIssue({
+                      category: "Road Damage",
+                      location: "",
+                      address: "",
+                      latitude: null,
+                      longitude: null,
+                    });
+                    setImageFile(null);
+                    setImageSource("");
+                    setImageMethod("");
+                    setLocationMethod("manual");
+                    setShowMapPicker(false);
+                    setLocationError("");
+                  }}
                   disabled={loading}
                 >
-                  Upload from Device
+                  ↻ Reset
                 </button>
               </div>
-            </div>
+            </form>
 
-            {imageFile && (
-              <p className="location-help-text">
-                Selected image ({imageSource || "File"}): {imageFile.name}
-              </p>
-            )}
-
-            <div className="form-actions">
-              <button type="submit" className="issue-report-btn" disabled={loading}>
-                {loading ? "Reporting..." : "Report Issue"}
-              </button>
-
-              <button
-                type="button"
-                className="form-reset-btn"
-                onClick={() => {
-                  setNewIssue({
-                    category: "Road Damage",
-                    location: "",
-                    address: "",
-                    latitude: null,
-                    longitude: null,
-                  });
-                  setImageFile(null);
-                  setImageSource("");
-                  setShowMapPicker(false);
-                  setLocationError("");
-                }}
-                disabled={loading}
-              >
-                ↻ Reset
-              </button>
-            </div>
-          </form>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <div className="section-head-row">
-            <h2>Your Reported Issues</h2>
-            <button onClick={fetchIssues} disabled={loading} className="refresh-btn user-refresh-btn">
-              🔄 {loading ? "Refreshing..." : "Refresh"}
-            </button>
+            {error && <div className="error-message">{error}</div>}
           </div>
-          <div className="issues-list">
-            {issues.length === 0 ? (
-              <p>No issues reported yet</p>
-            ) : (
-              issues.map((issue) => (
-                <div key={issue._id} className="issue-card">
-                  <div className="issue-header">
-                    <h3>{issue.category}</h3>
-                    <span
-                      className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}
-                    >
-                      {issue.status}
-                    </span>
-                  </div>
+        )}
 
-                  <p><strong>Location:</strong> {issue.address || issue.location}</p>
-                  {(issue.latitude !== undefined && issue.latitude !== null && issue.longitude !== undefined && issue.longitude !== null) && (
-                    <p>
-                      <strong>Coordinates:</strong> {issue.latitude}, {issue.longitude}
-                    </p>
-                  )}
-                  <p><strong>Reported:</strong> {new Date(issue.createdAt).toLocaleDateString()}</p>
-
-                  {issue.explanation && (
-                    <div className="explanation">
-                      <strong>Analysis:</strong> {issue.explanation}
+        {/* Your Reported Issues Section */}
+        {activeTab === "issues" && (
+          <div className="section">
+            <div className="section-head-row">
+              <h2>Your Reported Issues</h2>
+              <button onClick={fetchIssues} disabled={loading} className="refresh-btn user-refresh-btn">
+                🔄 {loading ? "Refreshing..." : "Refresh"}
+              </button>
+            </div>
+            <div className="issues-list">
+              {issues.length === 0 ? (
+                <p>No issues reported yet</p>
+              ) : (
+                issues.map((issue) => (
+                  <div key={issue._id} className="issue-card">
+                    <div className="issue-header">
+                      <h3>{issue.category}</h3>
+                      <span
+                        className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}
+                      >
+                        {issue.status}
+                      </span>
                     </div>
-                  )}
 
-                  {issue.imageUrl && (
-                    <img
-                      src={`http://localhost:5000/${issue.imageUrl}`}
-                      alt={issue.category}
-                      style={{ maxWidth: "100%", marginTop: "10px" }}
-                    />
-                  )}
-                </div>
-              ))
-            )}
+                    {issue.imageUrl && (
+                      <img
+                        src={`http://localhost:5000/${issue.imageUrl}`}
+                        alt="Issue"
+                        className="issue-card-image"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    )}
+
+                    <p><strong>Location:</strong> {issue.address || issue.location}</p>
+                    <p><strong>Reported:</strong> {new Date(issue.createdAt).toLocaleString()}</p>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
