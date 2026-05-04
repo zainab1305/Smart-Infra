@@ -863,7 +863,7 @@ export default function AdminDashboard({ token, onLogout }) {
                   <p>Repeat Complaints: {issue.repeatComplaintCount || 1}</p>
                   <p>Confidence: {(issue.confidenceScore * 100).toFixed(1)}%</p>
                   <p>Status: <span className={`status-badge status-${issue.status.replace(/\s+/g, "")}`}>{issue.status}</span></p>
-                  {issue.imageUrl && <img src={`http://localhost:5000/${issue.imageUrl}`} alt="Issue" />}
+                  {issue.imageUrl && <img className="issue-card-image" src={`http://localhost:5000/${issue.imageUrl}`} alt="Issue" />}
                 </div>
               ))}
             </div>
