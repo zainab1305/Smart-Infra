@@ -1879,6 +1879,98 @@ body {
   font-weight: 700;
 }
 
+/* ============================================================================
+   USER DASHBOARD - SOFTENED LAYOUT AND BACKGROUND
+   Keeps the user dashboard aligned with the left navigation while
+   toning down the background treatment for a more subtle, modern look.
+   ============================================================================ */
+
+.dashboard:has(.user-dashboard-nav) {
+  grid-template-columns: 200px minmax(0, 1fr);
+  background-color: var(--bg-primary);
+  background-image:
+    radial-gradient(circle at 18% 14%, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.03) 18%, transparent 45%),
+    linear-gradient(180deg, rgba(248, 250, 252, 0.98) 0%, rgba(241, 245, 249, 0.98) 100%);
+}
+
+[data-theme="dark"] .dashboard:has(.user-dashboard-nav) {
+  background-image:
+    radial-gradient(circle at 18% 14%, rgba(59, 130, 246, 0.06) 0%, rgba(59, 130, 246, 0.02) 18%, transparent 45%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(17, 24, 39, 0.98) 100%);
+}
+
+.dashboard:has(.user-dashboard-nav)::before {
+  background: radial-gradient(circle at 82% 14%, rgba(59, 130, 246, 0.06) 0%, rgba(59, 130, 246, 0.02) 30%, transparent 58%);
+}
+
+.dashboard:has(.user-dashboard-nav) .dashboard-content {
+  grid-column: 2;
+  padding: 16px 20px 24px;
+  min-width: 0;
+}
+
+.user-dashboard-nav {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-right: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 8px 0 24px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+[data-theme="dark"] .user-dashboard-nav {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(17, 24, 39, 0.94) 100%);
+  border-right-color: rgba(148, 163, 184, 0.18);
+}
+
+.nav-tabs {
+  padding: 24px 14px 14px;
+  gap: 8px;
+}
+
+.nav-tab {
+  margin: 0;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.06);
+  border-color: rgba(59, 130, 246, 0.14);
+  border-left-color: transparent;
+  transform: translateX(2px);
+}
+
+.nav-tab.active {
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.18);
+  border-left-color: var(--accent-primary);
+}
+
+@media (max-width: 768px) {
+  .dashboard:has(.user-dashboard-nav) {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard:has(.user-dashboard-nav) .user-dashboard-nav {
+    position: relative;
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+  }
+
+  .dashboard:has(.user-dashboard-nav) .dashboard-content {
+    grid-column: 1;
+    padding: 12px;
+  }
+}
+
 .task-section {
   margin-bottom: 16px;
 }
@@ -2455,8 +2547,10 @@ svg text {
   }
 
   .dashboard-content {
-    margin-left: 200px;
-    width: calc(100% - 200px);
+    /* remove hard margin so grid layout (when sidebar is present)
+       can manage placement; this prevents an extra gap on the left */
+    margin-left: 0;
+    width: 100%;
     min-height: 100vh;
     padding: 20px;
     background: var(--bg-primary);

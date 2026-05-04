@@ -33,8 +33,10 @@ body {
 }
 
 .app.with-sidebar > .dashboard-header {
-  margin-left: 200px;
-  width: calc(100% - 200px);
+  /* remove hard header offset — sidebar is fixed, header should span full width
+     so layout is handled by grid and fixed positioning instead of manual margin */
+  margin-left: 0;
+  width: 100%;
 }
 
 main {
