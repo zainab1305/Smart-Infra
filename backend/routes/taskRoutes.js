@@ -345,12 +345,29 @@ router.get("/dashboard/week-summary", authMiddleware, adminOnly, async (req, res
     const weekNumber = getCurrentWeek();
     const year = new Date().getFullYear();
 
+    // Get all active workers first (matches autoScheduleIssues pattern)
+    const allWorkers = await User.find({ role: "worker", isActive: true });
+
     const tasks = await Task.find({ weekNumber, year })
       .populate("workerId")
       .populate("issueId");
 
+    // Initialize stats for ALL active workers
     const workerStats = {};
+    allWorkers.forEach((worker) => {
+      const workerId = worker._id.toString();
+      workerStats[workerId] = {
+        worker: worker,
+        totalTasks: 0,
+        completed: 0,
+        inProgress: 0,
+        scheduled: 0,
+        rejected: 0,
+        tasks: [],
+      };
+    });
 
+    // Update stats for workers with tasks in this week
     tasks.forEach((task) => {
       const workerId = task.workerId._id.toString();
       if (!workerStats[workerId]) {
@@ -433,6 +450,9 @@ router.get("/report-summary", authMiddleware, adminOnly, async (req, res) => {
     const duration = req.query.duration === "month" ? "month" : "week";
     const { startDate, endDate } = getDurationRange(duration);
 
+    // Get all active workers first (matches autoScheduleIssues pattern)
+    const allWorkers = await User.find({ role: "worker", isActive: true });
+
     const tasks = await Task.find({
       assignedDate: {
         $gte: startDate,
@@ -450,7 +470,20 @@ router.get("/report-summary", authMiddleware, adminOnly, async (req, res) => {
       rejected: 0,
     };
 
+    // Initialize breakdown for ALL active workers
     const workerBreakdown = {};
+    allWorkers.forEach((worker) => {
+      const workerId = worker._id.toString();
+      workerBreakdown[workerId] = {
+        workerName: worker.name || "Unknown Worker",
+        workerCode: worker.workerId || "N/A",
+        assigned: 0,
+        completed: 0,
+        inProgress: 0,
+        scheduled: 0,
+        rejected: 0,
+      };
+    });
 
     tasks.forEach((task) => {
       const statusBucket =
